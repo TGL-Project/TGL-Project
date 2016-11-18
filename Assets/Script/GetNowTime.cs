@@ -6,15 +6,24 @@ using UnityEngine.UI;
 public class GetNowTime : MonoBehaviour {
 
 	public Text nowTime; //現在の時刻を取得
-	public Text remainingTime; //残り時間
-	private DateTime nextTrainDate; //次の時刻表
+	public Text remainingTime1; //残り時間
+	public Text remainingTime2; //残り時間
+	public Text remainingTime3; //残り時間
+	private DateTime nextTrainDate1; //次の時刻表
+	private DateTime nextTrainDate2; //次の時刻表
+	private DateTime nextTrainDate3; //次の時刻表
+	private DateTime nextTrainDate4; //次の時刻表
+
 
 	// 初回の動作「コンストラクタ」
 	void Start () {
 		// 現在時刻を取得(直近を取るために必要そう)
 		// DateTime dtToday = DateTime.Now;
 		// ここの new Date(省略)を直近の時刻表に変える
-		nextTrainDate = new DateTime(2016,11,18,18,4,0);
+		nextTrainDate1 = new DateTime(2016,11,18,20,20,0);
+		nextTrainDate2 = new DateTime(2016,11,18,20,25,0);
+		nextTrainDate3 = new DateTime(2016,11,18,20,30,0);
+		nextTrainDate4 = new DateTime(2016,11,18,20,35,0);
 		// nextTrainDate = recentTrainTime(dtToday);
 	}
 
@@ -26,20 +35,26 @@ public class GetNowTime : MonoBehaviour {
 		nowTime.text = dtToday.ToShortTimeString();
 
 		//差分(TimeSpan)
-		TimeSpan difference = nextTrainDate - dtToday;
-
+		TimeSpan difference1 = nextTrainDate1 - dtToday;
+		TimeSpan difference2 = nextTrainDate2 - dtToday;
+		TimeSpan difference3 = nextTrainDate3 - dtToday;
+		TimeSpan difference4 = nextTrainDate4 - dtToday;
 		// if (difference = 0)で次の直近時刻表を取る
-		if (difference.TotalSeconds <= 0) {
+		if (difference1.TotalSeconds <= 0) {
 			// ここの new Date(省略)を直近の時刻表に変える
-			nextTrainDate = new DateTime(2016,11,18,18,55,0);
+			nextTrainDate1 = nextTrainDate2;
+			nextTrainDate2 = nextTrainDate3;
+			nextTrainDate3 = nextTrainDate4;
 		}
 
 		//+""で文字列変換とUniyUIに代入
-		if (difference.TotalSeconds <= 60) {
-			remainingTime.text = difference.Seconds + "秒";
+		if (difference1.TotalSeconds <= 60) {
+			remainingTime1.text = difference1.Seconds + "秒";
 		} else {
-			remainingTime.text = difference.Minutes + "分";
+			remainingTime1.text = difference1.Minutes + "分";
 		}
+			remainingTime2.text = difference2.Minutes + "分";
+			remainingTime3.text = difference3.Minutes + "分";
 	}
 
 	// DateTime recentTrainTime (DateTime nowTime) {
