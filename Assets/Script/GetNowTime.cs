@@ -39,6 +39,7 @@ public class GetNowTime : MonoBehaviour {
 		TimeSpan difference2 = nextTrainDate2 - dtToday;
 		TimeSpan difference3 = nextTrainDate3 - dtToday;
 		TimeSpan difference4 = nextTrainDate4 - dtToday;
+
 		// if (difference = 0)で次の直近時刻表を取る
 		if (difference1.TotalSeconds <= 0) {
 			// ここの new Date(省略)を直近の時刻表に変える
