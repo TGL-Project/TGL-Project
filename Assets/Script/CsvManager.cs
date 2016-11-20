@@ -4,50 +4,29 @@ using System.Text;
 using UnityEngine;
 using System.Collections;
 
-public class CsvManager : MonoBehaviour {
-	private string[] timeTable=null;
+public class CsvManager {
+
+	private string[] timeTable_s = null;
+
 	// Use this for initialization
-	void Start()
-	{
-		ReadCsv ();
-
-		NextTime (DateTime.Now);
+	void Start() {
+		ReadCsv();
+		NextTime(DateTime.Now);
 	}
 
-	// Update is called once per frame
-	void Update()
-	{
-
-	}
-
-	static void ReadCsv()
-	{
+	void ReadCsv() {
 		string filePath = "TimeTable.csv";
-		StreamReader reader = new StreamReader(filePath);
+		StreamReader reader = new StreamReader(filePath, Encoding.GetEncoding("UTF-8"));
 		while (reader.Peek() >= 0) {
-			string[] cols = reader.ReadLine().Split(',');
-			for (int n = 0; n < cols.Length; n++) {
-				
-
-			}
-
-
-
+			timeTable_s = reader.ReadLine().Split(',');
 		}
 		reader.Close();
 	}
 
-
-
-
-	void NextTime(DateTime time)
-	{ 
-		for(int n = 0; n < timeTable.Length;n++){
-			DateTime timeTable = DateTime.Parse(timeTable [n]);
-
+	void NextTime(DateTime time) {
+		for(int n = 0; n < timeTable_s.Length; n++){
+			DateTime timeTable = DateTime.Parse(timeTable_s [n]);
 			Debug.Log(timeTable);
-
-
 		}
 	}
 
