@@ -4,14 +4,14 @@ using System.Text;
 using UnityEngine;
 using System.Collections;
 
-public class CsvManager {
+public class CsvManager : MonoBehaviour {
 
 	private string[] timeTable_s = null;
 
 	// Use this for initialization
 	void Start() {
 		ReadCsv();
-		NextTime(DateTime.Now);
+		Debug.Log(NextTime(DateTime.Now));
 	}
 
 	void ReadCsv() {
@@ -21,13 +21,23 @@ public class CsvManager {
 			timeTable_s = reader.ReadLine().Split(',');
 		}
 		reader.Close();
+
+		/*//csv読み込み時点のDebug用
+		for(int i = 0; i < timeTable_s.Length; i++) {
+	 		Debug.Log(timeTable_s[i]);
+		}
+		*/
 	}
 
-	void NextTime(DateTime time) {
-		for(int n = 0; n < timeTable_s.Length; n++){
-			DateTime timeTable = DateTime.Parse(timeTable_s [n]);
-			Debug.Log(timeTable);
+	DateTime NextTime(DateTime nowTime) {
+		for(int i = 0; i < timeTable_s.Length; i++){
+			//問題:Parseで入れると今日の日付になるから24:00以降をどうするか
+			DateTime timeTable_d = DateTime.Parse(timeTable_s[i]);
+			if (DateTime.Compare(timeTable_d, nowTime) >= 0) {
+				return timeTable_d;
+			}
 		}
+		return nowTime; //今日の電車がもうないとき
 	}
 
 }
