@@ -8,10 +8,15 @@ public class CsvManager {
 
 	private string[] timeTable_s = null;
 
+	public CsvManager () {
+		// 駅データ読み込み
+		ReadCsv();
+	}
+
 	/*
 	 * CSV読み取り用
 	 */
-	public void ReadCsv() {
+	private void ReadCsv() {
 		string filePath = "TimeTable.csv"; //Debugはdummy.csv
 		StreamReader reader = new StreamReader(filePath, Encoding.GetEncoding("UTF-8"));
 		while (reader.Peek() >= 0) {

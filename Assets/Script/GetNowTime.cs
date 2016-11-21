@@ -15,9 +15,6 @@ public class GetNowTime : MonoBehaviour {
 
 	// 初回の動作
 	void Start () {
-		//駅データ読み込み
-		csvManager.ReadCsv();
-
 		// 時刻表データの取り出し
 		nextTrainDate.Add(csvManager.NextTime(DateTime.Now));
 		for (int i = 1; i < 3; i++) {
