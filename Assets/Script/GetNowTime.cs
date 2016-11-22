@@ -19,7 +19,7 @@ public class GetNowTime : MonoBehaviour {
 		nextTrainDate.Add(csvManager.NextTime(DateTime.Now));
 		for (int i = 1; i < 3; i++) {
 			nextTrainDate.Add(
-				csvManager.NextTime((DateTime)nextTrainDate[i-1])
+				csvManager.NextTime(nextTrainDate[i-1])
 			);
 		}
 	}
@@ -32,27 +32,27 @@ public class GetNowTime : MonoBehaviour {
 		nowTime.text = dtToday.ToShortTimeString();
 
 		for (int i = 0; i < 3; i++) {
-			diff.Insert(i,(TimeSpan)(((DateTime)nextTrainDate[i]) - dtToday));
+			diff.Insert(i,nextTrainDate[i] - dtToday);
 		}
 
 		// if (difference = 0)で次の直近時刻表を取る
-		if (((TimeSpan)diff[0]).TotalSeconds < 0) {
+		if (diff[0].TotalSeconds < 0) {
 			// 時刻表データの取り出し
-			nextTrainDate.Insert(0,(DateTime)nextTrainDate[1]);
+			nextTrainDate.Insert(0,nextTrainDate[1]);
 			for (int i = 1; i < 3; i++) {
 				nextTrainDate.Insert(i,
-					csvManager.NextTime((DateTime)nextTrainDate[i-1])
+					csvManager.NextTime(nextTrainDate[i-1])
 				);
 			}
 		}
 
 		//+""で文字列変換をした後UniyUIに代入
-		if (((TimeSpan)diff[0]).TotalSeconds <= 60) {
-			remainingTime1.text = ((TimeSpan)diff[0]).Seconds + "秒";
+		if (diff[0].TotalSeconds <= 60) {
+			remainingTime1.text = diff[0].Seconds + "秒";
 		} else {
-			remainingTime1.text = ((TimeSpan)diff[0]).Minutes + "分";
+			remainingTime1.text = diff[0].Minutes + "分";
 		}
-			remainingTime2.text = ((TimeSpan)diff[1]).Minutes + "分";
-			remainingTime3.text = ((TimeSpan)diff[2]).Minutes + "分";
+			remainingTime2.text = diff[1].Minutes + "分";
+			remainingTime3.text = diff[2].Minutes + "分";
 	}
 }
