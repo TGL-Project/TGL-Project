@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using System;
 using UnityEngine.UI;
 
@@ -9,9 +9,9 @@ public class GetNowTime : MonoBehaviour {
 	public Text remainingTime1; // 残り時間1
 	public Text remainingTime2; // 残り時間2
 	public Text remainingTime3; // 残り時間3
-	private ArrayList nextTrainDate = new ArrayList(); //次の時刻表たち
+	private List<DateTime> nextTrainDate = new List<DateTime>(); //次の時刻表たち
 	private CsvManager csvManager = new CsvManager();
-	private ArrayList diff = new ArrayList(); //差分現在時刻から駅の時間を引いて残り時間(diff)をだす
+	private List<TimeSpan> diff = new List<TimeSpan>(); //差分現在時刻から駅の時間を引いて残り時間(diff)をだす
 
 	// 初回の動作
 	void Start () {
@@ -44,10 +44,6 @@ public class GetNowTime : MonoBehaviour {
 					csvManager.NextTime((DateTime)nextTrainDate[i-1])
 				);
 			}
-			// for (int i = 0; i < 4; i++) {
-			// 	nextTrainDate.Insert(i,(DateTime)nextTrainDate[i+1]);
-			// 	Debug.Log((DateTime)nextTrainDate[i+1]);
-			// }
 		}
 
 		//+""で文字列変換をした後UniyUIに代入
