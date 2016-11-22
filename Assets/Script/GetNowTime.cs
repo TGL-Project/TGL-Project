@@ -9,18 +9,16 @@ public class GetNowTime : MonoBehaviour {
 	public Text remainingTime1; // 残り時間1
 	public Text remainingTime2; // 残り時間2
 	public Text remainingTime3; // 残り時間3
-	private List<DateTime> nextTrainDate = new List<DateTime>(); //次の時刻表たち
+	private List<DateTime> nextTrainDate = new List<DateTime>(); // 次の時刻表たち
 	private CsvManager csvManager = new CsvManager();
-	private List<TimeSpan> diff = new List<TimeSpan>(); //差分現在時刻から駅の時間を引いて残り時間(diff)をだす
+	private List<TimeSpan> diff = new List<TimeSpan>(); // 差分現在時刻から駅の時間を引いて残り時間(diff)をだす
 
 	// 初回の動作
 	void Start () {
 		// 時刻表データの取り出し
 		nextTrainDate.Add(csvManager.NextTime(DateTime.Now));
 		for (int i = 1; i < 3; i++) {
-			nextTrainDate.Add(
-				csvManager.NextTime(nextTrainDate[i-1])
-			);
+			nextTrainDate.Add(csvManager.NextTime(nextTrainDate[i-1]));
 		}
 	}
 
@@ -35,18 +33,16 @@ public class GetNowTime : MonoBehaviour {
 			diff.Insert(i,nextTrainDate[i] - dtToday);
 		}
 
-		// if (difference = 0)で次の直近時刻表を取る
+		// 差が0以下(電車が行ってしまったとき)
 		if (diff[0].TotalSeconds < 0) {
-			// 時刻表データの取り出し
+			// 時刻表の入れ替え
 			nextTrainDate.Insert(0,nextTrainDate[1]);
 			for (int i = 1; i < 3; i++) {
-				nextTrainDate.Insert(i,
-					csvManager.NextTime(nextTrainDate[i-1])
-				);
+				nextTrainDate.Insert(i,csvManager.NextTime(nextTrainDate[i-1]));
 			}
 		}
 
-		//+""で文字列変換をした後UniyUIに代入
+		// +""で文字列変換をした後UniyUIに代入
 		if (diff[0].TotalSeconds <= 60) {
 			remainingTime1.text = diff[0].Seconds + "秒";
 		} else {
