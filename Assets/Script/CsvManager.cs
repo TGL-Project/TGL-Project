@@ -11,12 +11,11 @@ public class CsvManager {
 		// 駅データ読み込み
 		ReadCsv();
 	}
-
 	/*
 	 * CSV読み取り用
 	 */
 	private void ReadCsv() {
-		string filePath = "TimeTable.csv"; //Debugはdummy.csv
+		string filePath = "dummy.csv"; //Debugはdummy.csv
 		StreamReader reader = new StreamReader(filePath, Encoding.GetEncoding("UTF-8"));
 		while (reader.Peek() >= 0) {
 			timeTable_s = reader.ReadLine().Split(',');
