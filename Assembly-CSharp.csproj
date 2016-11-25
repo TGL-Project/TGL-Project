@@ -45,11 +45,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Script\BoxMotion.cs" />
      <Compile Include="Assets\Script\Camera_Aspect.cs" />
      <Compile Include="Assets\Script\CsvManager.cs" />
      <Compile Include="Assets\Script\GetNowTime.cs" />
-     <Compile Include="Assets\Script\test.cs" />
  <Reference Include="UnityEngine.Networking">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
