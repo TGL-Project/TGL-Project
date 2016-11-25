@@ -14,7 +14,7 @@ public class CsvManager {
 	/*
 	 * CSV読み取り用
 	 */
-	private void ReadCsv() {
+	private void ReadCsv () {
 		string filePath = "dummy.csv"; //Debugはdummy.csv
 		StreamReader reader = new StreamReader(filePath, Encoding.GetEncoding("UTF-8"));
 		while (reader.Peek() >= 0) {
@@ -28,14 +28,17 @@ public class CsvManager {
 	 * 次の次の時刻を呼び出したい場合現在の時刻を引数に渡して帰ってきた値を
 	 * また引数に入れる．
 	 */
-	public DateTime NextTime(DateTime time) {
+	public DateTime NextTime (DateTime time) {
 		for(int i = 0; i < timeTable_s.Length; i++){
 			DateTime timeTable_d = DateTime.Parse(timeTable_s[i]);
 			if (DateTime.Compare(timeTable_d, time) > 0) {
 				return timeTable_d;
 			}
 		}
-		return time; //今日の電車がもうないとき　とりあえず仮置き
+		return time; //今日の電車がもうないときは現在時刻を返品
 	}
 
+	public DateTime GetLastTrainTime () {
+		return DateTime.Parse(timeTable_s[timeTable_s.Length - 1]);
+	}
 }
