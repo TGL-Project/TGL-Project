@@ -17,7 +17,8 @@ public class ScrollController : MonoBehaviour {
 	/// <summary>
 	/// The csv mgr.
 	/// </summary>
-	private CsvManager csvMgr = new CsvManager();
+	[SerializeField]
+	private CsvManager csvMgr = null;
 
 	/// <summary>
 	/// 次の電車の時刻
@@ -42,6 +43,7 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	void Start ()
 	{
+		csvMgr.ReadCsv();
 		Initialize(); //初期化用
 	}
 
@@ -53,7 +55,7 @@ public class ScrollController : MonoBehaviour {
 	{
 		for (int i = 0; i < GetRemainingTrainCount(); i++)
 		{
-			//プレハブのコピー
+			// プレハブのコピー
 			RectTransform item = GameObject.Instantiate(prefab) as RectTransform;
 			item.name = "RemainingTimeNode" + i;
 			item.SetParent(transform, false);
@@ -90,10 +92,8 @@ public class ScrollController : MonoBehaviour {
 		}
 
 		// getNodeの番号は0を消してもそこを取得するためノードが参照できずエラーが起きる
-		// →int i = 0　の部分を動的に変えてやれば良い
+		// →int i = 0 の部分を動的に変えてやれば良い
 		for(int i = 0; i < nextTrainDate.Count; i++) {
-			Debug.Log(diff.Count);
-			Debug.Log(nextTrainDate.Count);
 
 			// 入れる前に古いデータを削除
 			diff.RemoveAt(i);
@@ -126,8 +126,6 @@ public class ScrollController : MonoBehaviour {
 
 			firstNode++; //オブジェクトが消えるため次のオブジェクトを指定
 
-			Debug.Log(diff.Count);
-			Debug.Log(nextTrainDate.Count);
 		}
 	}
 

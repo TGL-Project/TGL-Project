@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{FE409F1F-05F5-9DB2-1C17-570A0AA7ACE2}</ProjectGuid>
+    <ProjectGuid>{BBE1BC66-043C-8971-F7A0-C373FD03D422}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -45,10 +45,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Script\Camera_Aspect.cs" />
-     <Compile Include="Assets\Script\CsvManager.cs" />
-     <Compile Include="Assets\Script\GetNowTime.cs" />
-     <Compile Include="Assets\Script\ScrollTrain\ScrollController.cs" />
+     <Compile Include="Assets\Scene\Script\CSV\CsvManager.cs" />
+     <Compile Include="Assets\Scene\Script\Camera_Aspect.cs" />
+     <Compile Include="Assets\Scene\Script\ScrollTrain\ScrollController.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
