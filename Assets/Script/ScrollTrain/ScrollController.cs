@@ -115,10 +115,16 @@ public class ScrollController : MonoBehaviour {
 				if (diff[i].TotalSeconds <= 60) {
 					text.text = diff[i].Seconds + "秒";
 				}
-		}
 
-		// 差が0以下(電車が行ってしまったとき)
-		if (diff[0].TotalSeconds < 0) {
+                if (GetRemainingTrainCount() == 1)
+                {
+                    //本数残り1で文字赤
+                    text.color = new Color(255f, 0, 0);
+                }
+        }
+
+        // 差が0以下(電車が行ってしまったとき)
+        if (diff[0].TotalSeconds < 0) {
 
 			diff.RemoveAt(0); // トップの表示用データを削除
 			nextTrainDate.RemoveAt(0); // 過ぎた電車の削除
