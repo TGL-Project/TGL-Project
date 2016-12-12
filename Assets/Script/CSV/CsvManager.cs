@@ -25,7 +25,7 @@ public class CsvManager : MonoBehaviour {
 	/// </summary>
 	public void ReadCsv ()
 	{
-		timeTableWeekday = GetCsvValues("dummy"); // 平日用
+		timeTableWeekday = GetCsvValues("timeTable"); // 平日用
 		timeTableHoliday = GetCsvValues("timeTable"); // 休日用
 		setTodayTimeTable();
 	}
