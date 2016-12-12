@@ -108,6 +108,7 @@ public class ScrollController : MonoBehaviour {
 					text.text = diff[i].Seconds + "秒";
 				}
 
+
 				if (GetRemainingTrainCount() == 1)
                 {
                     //本数残り1で文字赤
