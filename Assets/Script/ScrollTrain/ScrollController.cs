@@ -3,46 +3,74 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-/*
- * プレハブのコピー，プレハブへのテキスト代入
- */
+/// <summary>
+/// プレハブのコピー，プレハブへのテキスト代入
+/// </summary>
 public class ScrollController : MonoBehaviour {
 
+	/// <summary>
+	/// 時刻表のプレハブ
+	/// </summary>
 	[SerializeField]
 	private RectTransform prefab = null;
 
+	/// <summary>
+	/// The csv mgr.
+	/// </summary>
 	private CsvManager csvMgr = new CsvManager();
-	private List<DateTime> nextTrainDate = new List<DateTime>();
-	private List<TimeSpan> diff = new List<TimeSpan>(); // 次の電車到着予定時刻 - 現在時刻 = 残り時間(diff)
-	private int firstNode = 0; //getNodeで動的にfor文のスタートを変更させるため
 
-	/*
-	 * プレハブの複製及びContent以下への挿入
-	 */
-	void Start () {
+	/// <summary>
+	/// 次の電車の時刻
+	/// </summary>
+	private List<DateTime> nextTrainDate = new List<DateTime>();
+
+	/// <summary>
+	/// 残り時間(diff)
+	/// (次の電車到着予定時刻 - 現在時刻)を配列にして入れる
+	/// </summary>
+	private List<TimeSpan> diff = new List<TimeSpan>();
+
+	/// <summary>
+	/// The first node.
+	/// getNodeで動的にfor文のスタートを変更させるために使用
+	/// </summary>
+	private int firstNode = 0;
+
+	/// <summary>
+	/// 初期化用
+	/// プレハブの複製及びContent以下への挿入
+	/// </summary>
+	void Start ()
+	{
 		Initialize(); //初期化用
 	}
 
-	/*
-	 * 初期化用メソッド
-	 * 最初とすべての電車が行ってしまったときに読み込む
-	 */
-	private void Initialize() {
-		for (int i = 0; i < GetRemainingTrainCount(); i++) {
+	/// <summary>
+	///	初期化用メソッド
+	/// 最初とすべての電車が行ってしまったときに読み込む
+	/// </summary>
+	private void Initialize()
+	{
+		for (int i = 0; i < GetRemainingTrainCount(); i++)
+		{
 			//プレハブのコピー
 			RectTransform item = GameObject.Instantiate(prefab) as RectTransform;
 			item.name = "RemainingTimeNode" + i;
 			item.SetParent(transform, false);
 
 			// 次の電車時刻から終電までを収納
-			if (i == 0) {
+			if (i == 0)
+			{
 				nextTrainDate.Add(csvMgr.NextTime(DateTime.Now));
-			} else {
+			}
+			else
+			{
 				nextTrainDate.Add(csvMgr.NextTime(nextTrainDate[i-1]));
 			}
 
 			// 最後のノード
-			if (i == GetRemainingTrainCount() - 1) {
+			if (i == GetRemainingTrainCount() - 1)
+			{
 				// item.GetComponent<Image>().color = new Color32(200,200,200,255);
 			}
 
@@ -51,7 +79,9 @@ public class ScrollController : MonoBehaviour {
 		}
 	}
 
-	// Update is called once per frame
+	/// <summary>
+	/// Unityのアップデート関数
+	/// </summary>
 	void Update () {
 
 		// 全てのの電車が行ったときに初期化する
@@ -101,14 +131,19 @@ public class ScrollController : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// 動的に生成された"RemainingTimeNode[i]"(iは0..*)ゲームオブジェクト群の取得
+	/// </summary>
+	/// <returns>取得したNode</returns>
+	/// <param name="number">取りたいゲームオブジェクトの番号</param>
 	private GameObject GetNode(int number) {
 		return GameObject.Find("RemainingTimeNode" + number);
 	}
 
-	/*
-	 * ここで残りの電車本数の算出を行う
-	 * ScrollControllerが呼び出す
-	 */
+	/// <summary>
+	/// ここで残りの電車本数の算出を行う
+	/// </summary>
+	/// <returns>The remaining train count.</returns>
 	private int GetRemainingTrainCount() {
 		return csvMgr.GetTimeTableLength() - csvMgr.NextTimeNumber() - 1;
 	}
