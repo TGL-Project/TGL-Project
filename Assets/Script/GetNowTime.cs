@@ -1,29 +1,26 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using System;
 using UnityEngine.UI;
 
 public class GetNowTime : MonoBehaviour {
 
-	public Text nowTime; // 現在の時刻を取得
-	public Text remainingTime1; // 残り時間1
-	public Text remainingTime2; // 残り時間2
-	public Text remainingTime3; // 残り時間3
-	private ArrayList nextTrainDate = new ArrayList(); //次の時刻表たち
+	[SerializeField] // 現在の時刻を取得
+	private Text nowTime;
+
+	[SerializeField] // 残り時間
+	private Text remainingTime1, remainingTime2, remainingTime3;
+
+	private List<DateTime> nextTrainDate = new List<DateTime>();
 	private CsvManager csvManager = new CsvManager();
-	private ArrayList diff = new ArrayList(); //差分現在時刻から駅の時間を引いて残り時間(diff)をだす
+	private List<TimeSpan> diff = new List<TimeSpan>(); // 差分現在時刻から駅の時間を引いて残り時間(diff)をだす
 
 	// 初回の動作
 	void Start () {
-		//駅データ読み込み
-		csvManager.ReadCsv();
-
 		// 時刻表データの取り出し
 		nextTrainDate.Add(csvManager.NextTime(DateTime.Now));
 		for (int i = 1; i < 3; i++) {
-			nextTrainDate.Add(
-				csvManager.NextTime((DateTime)nextTrainDate[i-1])
-			);
+			nextTrainDate.Add(csvManager.NextTime(nextTrainDate[i-1]));
 		}
 	}
 
@@ -35,31 +32,25 @@ public class GetNowTime : MonoBehaviour {
 		nowTime.text = dtToday.ToShortTimeString();
 
 		for (int i = 0; i < 3; i++) {
-			diff.Insert(i,(TimeSpan)(((DateTime)nextTrainDate[i]) - dtToday));
+			diff.Insert(i,nextTrainDate[i] - dtToday);
 		}
 
-		// if (difference = 0)で次の直近時刻表を取る
-		if (((TimeSpan)diff[0]).TotalSeconds < 0) {
-			// 時刻表データの取り出し
-			nextTrainDate.Insert(0,(DateTime)nextTrainDate[1]);
+		// 差が0以下(電車が行ってしまったとき)
+		if (diff[0].TotalSeconds < 0) {
+			// 時刻表の入れ替え
+			nextTrainDate.Insert(0,nextTrainDate[1]);
 			for (int i = 1; i < 3; i++) {
-				nextTrainDate.Insert(i,
-					csvManager.NextTime((DateTime)nextTrainDate[i-1])
-				);
+				nextTrainDate.Insert(i,csvManager.NextTime(nextTrainDate[i-1]));
 			}
-			// for (int i = 0; i < 4; i++) {
-			// 	nextTrainDate.Insert(i,(DateTime)nextTrainDate[i+1]);
-			// 	Debug.Log((DateTime)nextTrainDate[i+1]);
-			// }
 		}
 
-		//+""で文字列変換をした後UniyUIに代入
-		if (((TimeSpan)diff[0]).TotalSeconds <= 60) {
-			remainingTime1.text = ((TimeSpan)diff[0]).Seconds + "秒";
+		// +""で文字列変換をした後UniyUIに代入
+		if (diff[0].TotalSeconds <= 60) {
+			remainingTime1.text = diff[0].Seconds + "秒";
 		} else {
-			remainingTime1.text = ((TimeSpan)diff[0]).Minutes + "分";
+			remainingTime1.text = diff[0].Minutes + "分";
 		}
-			remainingTime2.text = ((TimeSpan)diff[1]).Minutes + "分";
-			remainingTime3.text = ((TimeSpan)diff[2]).Minutes + "分";
+			remainingTime2.text = diff[1].Minutes + "分";
+			remainingTime3.text = diff[2].Minutes + "分";
 	}
 }

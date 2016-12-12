@@ -8,16 +8,14 @@ public class Camera_Aspect : MonoBehaviour {
     private float height = 960f;//盾
 
     private float pixelPerUnit = 100f;
-    
+
 	// Use this for initialization ...コンストラクタみたいなもの
 	void Awake () {
-        
-
         
         camera = GetComponent<Camera>();
         camera.orthographicSize = height / 2f / pixelPerUnit;
 	}
-	
+
 	// Update is called once per frame ...Updateメソッド。更新処理
 	void Update () {
 
