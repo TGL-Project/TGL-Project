@@ -142,6 +142,6 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	/// <returns>The remaining train count.</returns>
 	private int GetRemainingTrainCount() {
-		return csvMgr.GetTimeTableLength() - csvMgr.NextTimeNumber() - 1;
+		return csvMgr.GetTimeTableLength() - csvMgr.NextTimeNumber();
 	}
 }

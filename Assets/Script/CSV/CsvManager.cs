@@ -26,7 +26,7 @@ public class CsvManager : MonoBehaviour {
 	public void ReadCsv ()
 	{
 		timeTableWeekday = GetCsvValues("timeTable"); // 平日用
-		timeTableHoliday = GetCsvValues("timeTable"); // 休日用
+		//timeTableHoliday = GetCsvValues("timeTable"); // 休日用
 		setTodayTimeTable();
 	}
 
@@ -108,7 +108,7 @@ public class CsvManager : MonoBehaviour {
 	/// <returns>The time table length.</returns>
 	public int GetTimeTableLength ()
 	{
-		return timeTable.Count;
+		return timeTable.Count - 1;
 
 	}
 
@@ -134,8 +134,10 @@ public class CsvManager : MonoBehaviour {
 		// 行に分割
 		string[] lines = sentence.Split('\n');
 
+
 		// 最後の空行がある場合削除
-		int actualLength = lines.Length - 1;
+
+		int actualLength = lines.Length;
 		if (lines[lines.Length - 1] == "")
 		{
 			actualLength--;
