@@ -22,6 +22,12 @@ public class ScrollController : MonoBehaviour {
 	private CsvManager csvMgr = null;
 
 	/// <summary>
+	/// オブジェクトがないときの待機用画像
+	/// </summary>
+	[SerializeField]
+	private GameObject waitingImage = null;
+
+	/// <summary>
 	/// 更新頻度
 	/// </summary>
 	private float timeOut = 0.0f;
@@ -29,7 +35,7 @@ public class ScrollController : MonoBehaviour {
 	/// <summary>
 	/// 経過時間
 	/// </summary>
-	private float timeElapsed;
+	private float timeElapsed = 0.0f;
 
 	/// <summary>
 	/// 次に作成するオブジェクト名の番号
@@ -78,9 +84,9 @@ public class ScrollController : MonoBehaviour {
 		if (timeElapsed >= timeOut)
 		{
 			// 初期は 0 ~ 11
-			foreach(RemainingTime reTime in remainingTimeList)
+			foreach (RemainingTime reTime in remainingTimeList)
 			{
-				
+
 				Text text = reTime.GetText();
 
 				// 分表示
@@ -94,24 +100,47 @@ public class ScrollController : MonoBehaviour {
 
 			}
 
-			/// 作成
-			Debug.Log(remainingTimeList.Count);
-			Debug.Log(remainingTimeList[remainingTimeList.Count - 1].GetTime());
-			// 現在の最後尾の時刻(差分ではない)
-			TimeSpan lastDisplayTime = remainingTimeList[remainingTimeList.Count - 1].GetTime();
-			// 次に表示されるやつが60分以下になっているかどうか
-			if ((csvMgr.GetNextTime(lastDisplayTime) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60)
+			/// オブジェクトが存在しているときの処理
+			if (remainingTimeList.Count > 0)
 			{
-				CreateNode(csvMgr.GetNextTime(lastDisplayTime));
-			}
+				/// 作成
+				Debug.Log(remainingTimeList.Count);
+				Debug.Log(remainingTimeList[remainingTimeList.Count - 1].GetTime());
+				// 現在の最後尾の時刻(差分ではない)
+				TimeSpan lastDisplayTime = remainingTimeList[remainingTimeList.Count - 1].GetTime();
+				// 次に表示されるやつが60分以下になっているかどうか
+				if ((csvMgr.GetNextTime(lastDisplayTime) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60)
+				{
+					CreateNode(csvMgr.GetNextTime(lastDisplayTime));
+				}
 
-			/// 破棄
-			if (remainingTimeList[0].GetDiffTime().TotalSeconds <= 0)
+				/// 破棄
+				if (remainingTimeList[0].GetDiffTime().TotalSeconds <= 0)
+				{
+					Destroy(remainingTimeList[0].GetGameObj());
+					remainingTimeList.RemoveAt(0);
+				}
+
+				/// 色変更
+				if (remainingTimeList.Count == 1)
+				{
+					//本数残り1で文字赤
+					remainingTimeList[remainingTimeList.Count - 1].GetText().color = new Color(255f, 0, 0);
+				}
+			}
+			/// オブジェクトが無いとき
+			else 
 			{
-				Destroy(remainingTimeList[0].GetGameObj());
-				remainingTimeList.RemoveAt(0);
-			}
+				/// 何もない
+				waitingImage.SetActive(true);
 
+				/// 作成
+				if ((csvMgr.GetNextTime(DateTime.Now - DateTime.Today) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60)
+				{
+					CreateNode(csvMgr.GetNextTime(DateTime.Now - DateTime.Today));
+					waitingImage.SetActive(false);
+				}
+			}
 			timeOut = 1.0f;
 			timeElapsed = 0.0f;
 		}

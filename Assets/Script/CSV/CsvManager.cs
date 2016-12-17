@@ -29,7 +29,7 @@ public class CsvManager : MonoBehaviour {
 	{
 		timeTableWeekday = GetCsvValues("dummy"); // 平日用
 		timeTableHoliday = GetCsvValues("dummy"); // 休日用
-		setTodayTimeTable();
+		SetTodayTimeTable();
 	}
 
 	/// <summary>
@@ -64,7 +64,7 @@ public class CsvManager : MonoBehaviour {
 	/// <summary>
 	/// 今日の時刻表をセットするメソッド
 	/// </summary>
-	private void setTodayTimeTable()
+	private void SetTodayTimeTable()
 	{
 		DateTime today = DateTime.Today;
 		if (today.ToString("ddd") == "Sat" || today.ToString("ddd") == "Sun")
