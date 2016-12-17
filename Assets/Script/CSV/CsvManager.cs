@@ -22,69 +22,44 @@ public class CsvManager : MonoBehaviour {
 
 	/// <summary>
 	/// CSV読み取り用
+	/// dummy→5分ごと
+	/// timeTable→平日用
 	/// </summary>
 	public void ReadCsv ()
 	{
-		timeTableWeekday = GetCsvValues("timeTable"); // 平日用
-		timeTableHoliday = GetCsvValues("timeTable"); // 休日用
+		timeTableWeekday = GetCsvValues("dummy"); // 平日用
+		timeTableHoliday = GetCsvValues("dummy"); // 休日用
 		setTodayTimeTable();
 	}
 
 	/// <summary>
-	/// 引数より一つ先の電車到着予定時刻を取ってくる．
-	/// 次の次の時刻を呼び出したい場合，現在の時刻を引数に渡して帰ってきた値をまた引数に入れる．
+	/// Gets the time spans.
+	/// 現在~x時間後のタイムテーブルを取得する
 	/// </summary>
-	/// <returns>タイムテーブルにあるtimeより１つ後の時刻</returns>
-	/// <param name="time">普通は現在時刻</param>
-	public DateTime NextTime (DateTime time)
+	public List<TimeSpan> GetTimeSpans(TimeSpan time)
 	{
-		DateTime nextTimeTable = time;
-		for(int i = 0; i < timeTable.Count; i++)
-		{
-			nextTimeTable = DateTime.Parse(timeTable[i]);
+		// 返却するデータ
+		List<TimeSpan> tsWant = new List<TimeSpan>();
 
-			// timeよりも後の時刻かどうかを判定
-			if (DateTime.Compare(nextTimeTable, time) > 0)
+		// 現在の時刻
+		TimeSpan tsNow = DateTime.Now - DateTime.Today;
+
+		// 締切の時刻
+		TimeSpan tsLimit = tsNow + time;
+
+		// タイムテーブルを確認
+		foreach (String td_s in timeTable)
+		{
+			TimeSpan td_ts = TimeSpan.Parse(td_s);
+			// 範囲内
+			if (tsNow < td_ts && td_ts < tsLimit)
 			{
-				break;
+				tsWant.Add(td_ts);
 			}
 		}
-		return nextTimeTable;
-	}
 
-	/// <summary>
-	/// 現時刻の次の電車到着予定時刻の配列番号を取ってくる．
-	/// </summary>
-	/// <returns>The time number.</returns>
-	public int NextTimeNumber ()
-	{
-		int n = 0;
-		for(int i = 0; i < timeTable.Count; i++) 
-		{
-			DateTime nextTimeTable = DateTime.Parse(timeTable[i]);
-			if (DateTime.Compare(nextTimeTable, DateTime.Now) > 0)
-			{
-				n = i;
-				break;
-			}
-		}
-		return n;
+		return tsWant;
 	}
-
-	/// <summary>
-	/// 休日用と平日用の入れ替えメソッド
-	/// </summary>
-	//private void ChangeCsv()
-	//{
-	//	if (timeTable == timeTableWeekday)
-	//	{
-	//		timeTable = timeTableHoliday;
-	//	}
-	//	else
-	//	{
-	//		timeTable = timeTableWeekday;
-	//	}
-	//}
 
 	/// <summary>
 	/// 今日の時刻表をセットするメソッド
@@ -100,16 +75,6 @@ public class CsvManager : MonoBehaviour {
 		{
 			timeTable = timeTableWeekday;
 		}
-	}
-
-	/// <summary>
-	/// 電車の本数を返す
-	/// </summary>
-	/// <returns>The time table length.</returns>
-	public int GetTimeTableLength ()
-	{
-		return timeTable.Count;
-
 	}
 
 	/// <summary>
@@ -135,7 +100,7 @@ public class CsvManager : MonoBehaviour {
 		string[] lines = sentence.Split('\n');
 
 		// 最後の空行がある場合削除
-		int actualLength = lines.Length - 1;
+		int actualLength = lines.Length;
 		if (lines[lines.Length - 1] == "")
 		{
 			actualLength--;
@@ -156,4 +121,71 @@ public class CsvManager : MonoBehaviour {
 		}
 		return values;
 	}
+
+	/// <summary>
+	/// 休日用と平日用の入れ替えメソッド
+	/// </summary>
+	//private void ChangeCsv()
+	//{
+	//	if (timeTable == timeTableWeekday)
+	//	{
+	//		timeTable = timeTableHoliday;
+	//	}
+	//	else
+	//	{
+	//		timeTable = timeTableWeekday;
+	//	}
+	//}
+
+
+	/// <summary>
+	/// 引数より一つ先の電車到着予定時刻を取ってくる．
+	/// 次の次の時刻を呼び出したい場合，現在の時刻を引数に渡して帰ってきた値をまた引数に入れる．
+	/// </summary>
+	/// <returns>タイムテーブルにあるtimeより１つ後の時刻</returns>
+	/// <param name="time">現在時刻/ない場合は引数の時刻</param>
+	public TimeSpan GetNextTime(TimeSpan time)
+	{
+		TimeSpan nextTimeData = time;
+		for (int i = 0; i < timeTable.Count; i++)
+		{
+			nextTimeData = TimeSpan.Parse(timeTable[i]);
+
+			// timeよりも後の時刻かどうかを判定
+			if (TimeSpan.Compare(nextTimeData, time) > 0)
+			{
+				break;
+			}
+		}
+		return nextTimeData;
+	}
+
+	///// <summary>
+	///// 現時刻の次の電車到着予定時刻の配列番号を取ってくる．
+	///// </summary>
+	///// <returns>The time number.</returns>
+	//public int NextTimeNumber()
+	//{
+	//	int n = 0;
+	//	for (int i = 0; i < timeTable.Count; i++)
+	//	{
+	//		DateTime nextTimeTable = DateTime.Parse(timeTable[i]);
+	//		if (DateTime.Compare(nextTimeTable, DateTime.Now) > 0)
+	//		{
+	//			n = i;
+	//			break;
+	//		}
+	//	}
+	//	return n;
+	//}
+
+	///// <summary>
+	///// 電車の本数を返す
+	///// </summary>
+	///// <returns>The time table length.</returns>
+	//public int GetTimeTableLength()
+	//{
+	//	return timeTable.Count;
+
+	//}
 }
