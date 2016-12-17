@@ -108,6 +108,7 @@ public class ScrollController : MonoBehaviour {
 					text.text = diff.Seconds + "秒";
 				}
 
+<<<<<<< HEAD
 				forCount++;
 
 			}
@@ -123,6 +124,14 @@ public class ScrollController : MonoBehaviour {
 
 			timeOut = 1.0f;
 			timeElapsed = 0.0f;
+=======
+
+				if (GetRemainingTrainCount() == 1)
+                {
+                    //本数残り1で文字赤
+                    text.color = new Color(255f, 0, 0);
+                }
+>>>>>>> daa566a87f656a311b8ac5f3e0aa7db6c839b811
 		}
 	}
 
