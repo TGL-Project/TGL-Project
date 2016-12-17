@@ -16,21 +16,10 @@ public class ScrollController : MonoBehaviour {
 	private RectTransform prefab = null;
 
 	/// <summary>
-	/// タイムデータを表示している要素の親要素
-	/// </summary>
-	[SerializeField]
-	private Transform contentTransform = null;
-
-	/// <summary>
 	/// The csv mgr.
 	/// </summary>
 	[SerializeField]
 	private CsvManager csvMgr = null;
-
-	/// <summary>
-	/// 表示するタイムテーブル
-	/// </summary>
-	private List<TimeSpan> displayTimeData = new List<TimeSpan>();
 
 	/// <summary>
 	/// 更新頻度
@@ -48,6 +37,11 @@ public class ScrollController : MonoBehaviour {
 	private int nextNodeNumber = 0;
 
 	/// <summary>
+	/// 各RemainingTimeNodeの情報を入れる
+	/// </summary>
+	private List<RemainingTime> remainingTimeList = new List<RemainingTime>();
+
+	/// <summary>
 	/// 初期化用
 	/// プレハブの複製及びContent以下への挿入
 	/// </summary>
@@ -55,7 +49,6 @@ public class ScrollController : MonoBehaviour {
 	{
 		csvMgr.ReadCsv();
 		Initialize(); //初期化用
-		Test(); // デバッグ用
 	}
 
 	/// <summary>
@@ -65,14 +58,12 @@ public class ScrollController : MonoBehaviour {
 	private void Initialize()
 	{
 		// 一時間後までのタイムテーブルを取得
-		displayTimeData = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0));
+		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0));
 
 		// 表示する分のオブジェクトを作成
-		while (nextNodeNumber < displayTimeData.Count)
+		foreach (TimeSpan displayTime in displayTimes) 
 		{
-			CreateNode();
-			WillDeleteNode(nextNodeNumber);
-			nextNodeNumber++;
+			CreateNode(displayTime);
 		}
 	}
 
@@ -80,112 +71,65 @@ public class ScrollController : MonoBehaviour {
 	/// Unityのアップデート関数
 	/// </summary>
 	void Update () {
+		// 経過時刻の測定
 		timeElapsed += Time.deltaTime;
 
+		/// 1秒おきに呼び出す
 		if (timeElapsed >= timeOut)
 		{
-			int forCount = 0;
-			foreach (Transform child in contentTransform)
+			// 初期は 0 ~ 11
+			foreach(RemainingTime reTime in remainingTimeList)
 			{
-
-				GameObject childGObj = child.transform.FindChild("RemainingTimeText").gameObject;
-				Text text = childGObj.GetComponent<Text>();
-
-				TimeSpan diff = displayTimeData[forCount] - (DateTime.Now - DateTime.Today);
-
-				//if (diff.TotalSeconds <= 0)
-				//{
-				//	displayTimeData.RemoveAt(0);
-				//	diff = displayTimeData[forCount] - (DateTime.Now - DateTime.Today);
-				//}
+				
+				Text text = reTime.GetText();
 
 				// 分表示
-				text.text = diff.Minutes + "分";
+				text.text = reTime.GetDiffTime().Minutes + "分";
 
 				// 1分未満の表示
-				if (diff.TotalSeconds <= 60)
+				if (reTime.GetDiffTime().TotalSeconds <= 60)
 				{
-					text.text = diff.Seconds + "秒";
+					text.text = reTime.GetDiffTime().Seconds + "秒";
 				}
-				forCount++;
 
 			}
-			forCount = 0;
 
-			if ((csvMgr.GetNextTime(displayTimeData[displayTimeData.Count - 1]) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60)
+			/// 作成
+			Debug.Log(remainingTimeList.Count);
+			Debug.Log(remainingTimeList[remainingTimeList.Count - 1].GetTime());
+			// 現在の最後尾の時刻(差分ではない)
+			TimeSpan lastDisplayTime = remainingTimeList[remainingTimeList.Count - 1].GetTime();
+			// 次に表示されるやつが60分以下になっているかどうか
+			if ((csvMgr.GetNextTime(lastDisplayTime) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60)
 			{
-				displayTimeData.Add(csvMgr.GetNextTime(displayTimeData[displayTimeData.Count - 1]));
-				CreateNode();
-				WillDeleteNode(displayTimeData.Count - 1);
-				nextNodeNumber++;
+				CreateNode(csvMgr.GetNextTime(lastDisplayTime));
+			}
+
+			/// 破棄
+			if (remainingTimeList[0].GetDiffTime().TotalSeconds <= 0)
+			{
+				Destroy(remainingTimeList[0].GetGameObj());
+				remainingTimeList.RemoveAt(0);
 			}
 
 			timeOut = 1.0f;
 			timeElapsed = 0.0f;
 		}
+
 	}
 
-	///// <summary>
-	///// ここで残りの電車本数の算出を行う
-	///// </summary>
-	///// <returns>The remaining train count.</returns>
-	//private int GetRemainingTrainCount() {
-	//	return csvMgr.GetTimeTableLength() - csvMgr.NextTimeNumber() - 1;
-	//}
-
-	private void CreateNode()
+	/// <summary>
+	/// remainingTimeListに新たなRemainingTimeNodeを作成する
+	/// </summary>
+	/// <param name="displayTime">追加するnodeの時刻</param>
+	private void CreateNode(TimeSpan displayTime)
 	{
 		// プレハブのコピー
 		RectTransform item = GameObject.Instantiate(prefab) as RectTransform;
 		item.name = "RemainingTimeNode" + nextNodeNumber;
+		remainingTimeList.Add(new RemainingTime(item.gameObject, displayTime));
 		item.SetParent(transform, false);
+		nextNodeNumber++;
 	}
 
-	bool Testa = true;
-
-	private void WillDeleteNode(int deleteNumber)
-	{
-		float tmp = (float)((displayTimeData[deleteNumber] - (DateTime.Now - DateTime.Today)).TotalSeconds);
-		float deleteTime = tmp + 0.0f;
-		Destroy(GetNode(nextNodeNumber), deleteTime);
-
-		if (Testa)
-		{
-			Testa = false;
-			StartCoroutine(DisplayTimeDataDestroy(deleteTime, deleteNumber));
-		}
-	}
-
-	//「コルーチン」で呼び出すメソッド
-	private IEnumerator DisplayTimeDataDestroy(float deleteTime, int deleteNumber)
-	{
-		Debug.Log(deleteTime);
-		yield return new WaitForSeconds(deleteTime);
-		displayTimeData.RemoveAt(deleteNumber);
-		Debug.Log(deleteNumber + "を消しました");
-		Debug.Log(Time.deltaTime);
-	}
-
-	/// <summary>
-	/// 動的に生成された"RemainingTimeNode[i]"(iは0..*)ゲームオブジェクト群の取得
-	/// </summary>
-	/// <returns>取得したNode</returns>
-	/// <param name="number">取りたいゲームオブジェクトの番号</param>
-	private GameObject GetNode(int number)
-	{
-		return GameObject.Find("RemainingTimeNode" + number);
-	}
-
-	/// <summary>
-	/// デバッグ用
-	/// </summary>
-	private void Test()
-	{
-		//List<DateTime> dt = csvMgr.MultipleTime(DateTime.Now.AddHours(19), DateTime.Now.AddHours(20));
-		//Debug.Log(dt.Count);
-		//for (int i = 0; i < dt.Count;i++) 
-		//{
-		//	Debug.Log(dt[i]);
-		//}
-	}
 }

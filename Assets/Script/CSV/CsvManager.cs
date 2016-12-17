@@ -143,10 +143,12 @@ public class CsvManager : MonoBehaviour {
 	/// 次の次の時刻を呼び出したい場合，現在の時刻を引数に渡して帰ってきた値をまた引数に入れる．
 	/// </summary>
 	/// <returns>タイムテーブルにあるtimeより１つ後の時刻</returns>
-	/// <param name="time">現在時刻/ない場合は引数の時刻</param>
+	/// <param name="time">取りたい時刻より一つ前の時刻</param>
 	public TimeSpan GetNextTime(TimeSpan time)
 	{
+		// timeは仮置き
 		TimeSpan nextTimeData = time;
+
 		for (int i = 0; i < timeTable.Count; i++)
 		{
 			nextTimeData = TimeSpan.Parse(timeTable[i]);
