@@ -28,6 +28,12 @@ public class ScrollController : MonoBehaviour {
 	private GameObject waitingImage = null;
 
 	/// <summary>
+	/// 右上の表示用テキスト
+	/// </summary>
+	[SerializeField]
+	private Text holidayOrWeekday = null;
+
+	/// <summary>
 	/// 更新頻度
 	/// 146行目で調整
 	/// </summary>
@@ -44,11 +50,6 @@ public class ScrollController : MonoBehaviour {
 	private int nextNodeNumber = 0;
 
 	/// <summary>
-	/// 現在の時刻
-	/// </summary>
-	private TimeSpan nowTime = (DateTime.Now - DateTime.Today);
-
-	/// <summary>
 	/// 各RemainingTimeNodeの情報を入れる
 	/// </summary>
 	private List<RemainingTime> remainingTimeList = new List<RemainingTime>();
@@ -59,6 +60,9 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	void Start ()
 	{
+		
+		csvMgr.ReadCsv(); // csvファイルの読み込み
+		HoridayOrWeekDay(); //どっちを読み込んでいるかの判別
 		Initialize(); //初期化用
 	}
 
@@ -68,15 +72,11 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	private void Initialize()
 	{
-		// csvファイルの読み込み
-		csvMgr.ReadCsv();
-
 		// 一時間後までのタイムテーブルを取得
-		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0), nowTime);
+		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0));
 		// 表示する分のオブジェクトを作成
 		foreach (TimeSpan displayTime in displayTimes)
 		{
-			Debug.Log(displayTime);
 			CreateNode(displayTime);
 		}
 	}
@@ -98,12 +98,12 @@ public class ScrollController : MonoBehaviour {
 				Text text = reTime.GetText();
 
 				// 分表示
-				text.text = (reTime.GetTime() - nowTime).Minutes + "分";
+				text.text = (reTime.GetDiffTime()).Minutes + "分";
 
 				// 1分未満の表示
-				if ((reTime.GetTime() - nowTime).TotalSeconds <= 60)
+				if ((reTime.GetDiffTime()).TotalSeconds <= 60)
 				{
-					text.text = (reTime.GetTime() - nowTime).Seconds + "秒";
+					text.text = (reTime.GetDiffTime()).Seconds + "秒";
 				}
 
 			}
@@ -117,15 +117,14 @@ public class ScrollController : MonoBehaviour {
 				TimeSpan lastDisplayTime = remainingTimeList[remainingTimeList.Count - 1].GetTime();
 				// 次に表示されるやつが60分以下になっているかどうか
 
-				if ((csvMgr.GetNextTime(lastDisplayTime) - nowTime).TotalMinutes <= 60 &&
+				if ((csvMgr.GetNextTime(lastDisplayTime) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60 &&
 				    csvMgr.GetNextTime(lastDisplayTime) != new TimeSpan(-1, 0, 0, 0))
 				{
-					Debug.Log(csvMgr.GetNextTime(lastDisplayTime));
 					CreateNode(csvMgr.GetNextTime(lastDisplayTime));
 				}
 
 				/// 破棄
-				if ((remainingTimeList[0].GetTime() - nowTime).TotalSeconds <= 0)
+				if ((remainingTimeList[0].GetDiffTime()).TotalSeconds <= 0)
 				{
 					Destroy(remainingTimeList[0].GetGameObj());
 					remainingTimeList.RemoveAt(0);
@@ -145,10 +144,10 @@ public class ScrollController : MonoBehaviour {
 				waitingImage.SetActive(true);
 
 				/// 作成
-				if ((csvMgr.GetNextTime(nowTime) - nowTime).TotalMinutes <= 60 &&
-				     csvMgr.GetNextTime(nowTime) != new TimeSpan(-1, 0, 0, 0))
+				if ((csvMgr.GetNextTime((DateTime.Now - DateTime.Today)) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60 &&
+				     csvMgr.GetNextTime((DateTime.Now - DateTime.Today)) != new TimeSpan(-1, 0, 0, 0))
 				{
-					CreateNode(csvMgr.GetNextTime(nowTime));
+					CreateNode(csvMgr.GetNextTime((DateTime.Now - DateTime.Today)));
 					waitingImage.SetActive(false);
 				}
 			}
@@ -170,5 +169,33 @@ public class ScrollController : MonoBehaviour {
 		remainingTimeList.Add(new RemainingTime(item.gameObject, displayTime));
 		item.SetParent(transform, false);
 		nextNodeNumber++;
+	}
+
+	public void LeftButton()
+	{
+		csvMgr.SwapOfHolidayAndWeekday();
+
+		foreach (RemainingTime reTime in remainingTimeList)
+		{
+				Destroy(reTime.GetGameObj());
+		}
+
+		remainingTimeList.Clear();
+		HoridayOrWeekDay();
+		Initialize();
+	}
+
+	public void HoridayOrWeekDay()
+	{
+		if (csvMgr.IsHolidayOrWeekDay())
+		{
+			//平日の処理
+			holidayOrWeekday.text = "平日を表示中";
+		}
+		else
+		{
+			//休日の処理
+			holidayOrWeekday.text = "休日を表示中";
+		}
 	}
 }

@@ -19,6 +19,11 @@ public class RemainingTime {
 		return this.obj;
 	}
 
+	public TimeSpan GetDiffTime()
+	{
+		return timeData - (DateTime.Now - DateTime.Today);
+	}
+
 	public TimeSpan GetTime()
 	{
 		return timeData;
