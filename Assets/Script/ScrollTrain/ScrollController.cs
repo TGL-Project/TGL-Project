@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
@@ -21,21 +22,31 @@ public class ScrollController : MonoBehaviour {
 	private CsvManager csvMgr = null;
 
 	/// <summary>
-	/// 次の電車の時刻
+	/// オブジェクトがないときの待機用画像
 	/// </summary>
-	private List<DateTime> nextTrainDate = new List<DateTime>();
+	[SerializeField]
+	private GameObject waitingImage = null;
 
 	/// <summary>
-	/// 残り時間(diff)
-	/// (次の電車到着予定時刻 - 現在時刻)を配列にして入れる
+	/// 更新頻度
+	/// 146行目で調整
 	/// </summary>
-	private List<TimeSpan> diff = new List<TimeSpan>();
+	private float timeOut = 0.0f;
 
 	/// <summary>
-	/// The first node.
-	/// getNodeで動的にfor文のスタートを変更させるために使用
+	/// 経過時間
 	/// </summary>
-	private int firstNode = 0;
+	private float timeElapsed = 0.0f;
+
+	/// <summary>
+	/// 次に作成するオブジェクト名の番号
+	/// </summary>
+	private int nextNodeNumber = 0;
+
+	/// <summary>
+	/// 各RemainingTimeNodeの情報を入れる
+	/// </summary>
+	private List<RemainingTime> remainingTimeList = new List<RemainingTime>();
 
 	/// <summary>
 	/// 初期化用
@@ -43,7 +54,6 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	void Start ()
 	{
-		csvMgr.ReadCsv();
 		Initialize(); //初期化用
 	}
 
@@ -53,25 +63,14 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	private void Initialize()
 	{
-		for (int i = 0; i < GetRemainingTrainCount(); i++)
+		// csvファイルの読み込み
+		csvMgr.ReadCsv();
+		// 一時間後までのタイムテーブルを取得
+		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0));
+		// 表示する分のオブジェクトを作成
+		foreach (TimeSpan displayTime in displayTimes)
 		{
-			// プレハブのコピー
-			RectTransform item = GameObject.Instantiate(prefab) as RectTransform;
-			item.name = "RemainingTimeNode" + i;
-			item.SetParent(transform, false);
-
-			// 次の電車時刻から終電までを収納
-			if (i == 0)
-			{
-				nextTrainDate.Add(csvMgr.NextTime(DateTime.Now));
-			}
-			else
-			{
-				nextTrainDate.Add(csvMgr.NextTime(nextTrainDate[i-1]));
-			}
-
-			// 差分を残り時間配列に収納
-			diff.Insert(i, nextTrainDate[i] - DateTime.Now);
+			CreateNode(displayTime);
 		}
 	}
 
@@ -79,69 +78,89 @@ public class ScrollController : MonoBehaviour {
 	/// Unityのアップデート関数
 	/// </summary>
 	void Update () {
+		// 経過時刻の測定
+		timeElapsed += Time.deltaTime;
 
-		// 全てのの電車が行ったときに初期化する
-		if(GetRemainingTrainCount() == 0) {
-			Initialize();
-		}
+		/// 1秒おきに呼び出す
+		if (timeElapsed >= timeOut)
+		{
+			// 初期は 0 ~ 11
+			foreach (RemainingTime reTime in remainingTimeList)
+			{
 
-		for(int i = 0; i < nextTrainDate.Count; i++) {
+				Text text = reTime.GetText();
 
-			// 入れる前に古いデータを削除
-			diff.RemoveAt(i);
-			// 差分を残り時間配列に収納
-			diff.Insert(i, nextTrainDate[i] - DateTime.Now);
-			// i番目の時間表示ノードを取得
-			GameObject node = GetNode(firstNode + i);
-			GameObject nodeChild = node.transform.FindChild("RemainingTimeText").gameObject;
-			Text text = nodeChild.GetComponent<Text>();
+				// 分表示
+				text.text = reTime.GetDiffTime().Minutes + "分";
 
-			// +""で文字列変換をした後UniyUIに代入
-				// デフォルトは分表示
-				text.text = diff[i].Minutes + "分";
-				// 1時間以上の表示
-				if (diff[i].TotalSeconds >= 3600) {
-					text.text = diff[i].Hours + "時間" + diff[i].Minutes + "分";
-				}
 				// 1分未満の表示
-				if (diff[i].TotalSeconds <= 60) {
-					text.text = diff[i].Seconds + "秒";
+				if (reTime.GetDiffTime().TotalSeconds <= 60)
+				{
+					text.text = reTime.GetDiffTime().Seconds + "秒";
 				}
 
+			}
 
-				if (GetRemainingTrainCount() == 1)
-                {
-                    //本数残り1で文字赤
-                    text.color = new Color(255f, 0, 0);
-                }
+			/// オブジェクトが存在しているときの処理
+			if (remainingTimeList.Count > 0)
+			{
+				/// 作成
+				//Debug.Log(remainingTimeList.Count);
+				//Debug.Log(remainingTimeList[remainingTimeList.Count - 1].GetTime());
+				// 現在の最後尾の時刻(差分ではない)
+				TimeSpan lastDisplayTime = remainingTimeList[remainingTimeList.Count - 1].GetTime();
+				// 次に表示されるやつが60分以下になっているかどうか
+				if ((csvMgr.GetNextTime(lastDisplayTime) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60)
+				{
+					CreateNode(csvMgr.GetNextTime(lastDisplayTime));
+				}
+
+				/// 破棄
+				if (remainingTimeList[0].GetDiffTime().TotalSeconds <= 0)
+				{
+					Destroy(remainingTimeList[0].GetGameObj());
+					remainingTimeList.RemoveAt(0);
+				}
+
+				/// 色変更
+				if (remainingTimeList.Count == 1)
+				{
+					//本数残り1で文字赤
+					remainingTimeList[remainingTimeList.Count - 1].GetText().color = new Color(255f, 0, 0);
+				}
+			}
+			/// オブジェクトが無いとき
+			else
+			{
+				/// 何もない
+				waitingImage.SetActive(true);
+
+				/// 作成
+				if ((csvMgr.GetNextTime(DateTime.Now - DateTime.Today) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60 &&
+				     csvMgr.GetNextTime(DateTime.Now - DateTime.Today) != new TimeSpan(-1, 0, 0, 0))
+				{
+					CreateNode(csvMgr.GetNextTime(DateTime.Now - DateTime.Today));
+					waitingImage.SetActive(false);
+				}
+			}
+			timeOut = 1.0f;
+			timeElapsed = 0.0f;
 		}
 
-		// 差が0以下(電車が行ってしまったとき)
-		if (diff[0].TotalSeconds <= 0) {
-
-			diff.RemoveAt(0); // トップの表示用データを削除
-			nextTrainDate.RemoveAt(0); // 過ぎた電車の削除
-			Destroy(GetNode(firstNode)); // トップのノードを削除
-
-			firstNode++; //オブジェクトが消えるため次のオブジェクトを指定
-
-		}
 	}
 
 	/// <summary>
-	/// 動的に生成された"RemainingTimeNode[i]"(iは0..*)ゲームオブジェクト群の取得
+	/// remainingTimeListに新たなRemainingTimeNodeを作成する
 	/// </summary>
-	/// <returns>取得したNode</returns>
-	/// <param name="number">取りたいゲームオブジェクトの番号</param>
-	private GameObject GetNode(int number) {
-		return GameObject.Find("RemainingTimeNode" + number);
+	/// <param name="displayTime">追加するnodeの時刻</param>
+	private void CreateNode(TimeSpan displayTime)
+	{
+		// プレハブのコピー
+		RectTransform item = GameObject.Instantiate(prefab) as RectTransform;
+		item.name = "RemainingTimeNode" + nextNodeNumber;
+		remainingTimeList.Add(new RemainingTime(item.gameObject, displayTime));
+		item.SetParent(transform, false);
+		nextNodeNumber++;
 	}
 
-	/// <summary>
-	/// ここで残りの電車本数の算出を行う
-	/// </summary>
-	/// <returns>The remaining train count.</returns>
-	private int GetRemainingTrainCount() {
-		return csvMgr.GetTimeTableLength() - csvMgr.NextTimeNumber();
-	}
 }
