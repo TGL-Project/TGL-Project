@@ -41,10 +41,13 @@ public class CsvManager : MonoBehaviour {
 	/// Gets the time spans.
 	/// 現在~x時間後のタイムテーブルを取得する
 	/// </summary>
-	public List<TimeSpan> GetTimeSpans(TimeSpan time, TimeSpan tsNow)
+	public List<TimeSpan> GetTimeSpans(TimeSpan time)
 	{
 		// 返却するデータ
 		List<TimeSpan> tsWant = new List<TimeSpan>();
+
+		// 現在の時刻
+		TimeSpan tsNow = (DateTime.Now - DateTime.Today);
 
 		// 締切の時刻
 		TimeSpan tsLimit = tsNow + time;
@@ -127,17 +130,17 @@ public class CsvManager : MonoBehaviour {
 	/// <summary>
 	/// 休日用と平日用の入れ替えメソッド
 	/// </summary>
-	//private void ChangeCsv()
-	//{
-	//	if (timeTable == timeTableWeekday)
-	//	{
-	//		timeTable = timeTableHoliday;
-	//	}
-	//	else
-	//	{
-	//		timeTable = timeTableWeekday;
-	//	}
-	//}
+	public void SwapOfHolidayAndWeekday()
+	{
+		if (timeTable == timeTableWeekday)
+		{
+			timeTable = timeTableHoliday;
+		}
+		else
+		{
+			timeTable = timeTableWeekday;
+		}
+	}
 
 
 	/// <summary>
@@ -163,5 +166,17 @@ public class CsvManager : MonoBehaviour {
 			}
 		}
 		return nextTimeData;
+	}
+
+	public bool IsHolidayOrWeekDay()
+	{
+		if (timeTable == timeTableWeekday)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
