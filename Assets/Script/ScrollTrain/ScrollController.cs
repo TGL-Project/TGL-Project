@@ -44,6 +44,11 @@ public class ScrollController : MonoBehaviour {
 	private int nextNodeNumber = 0;
 
 	/// <summary>
+	/// 現在の時刻
+	/// </summary>
+	private TimeSpan nowTime = (DateTime.Now - DateTime.Today);
+
+	/// <summary>
 	/// 各RemainingTimeNodeの情報を入れる
 	/// </summary>
 	private List<RemainingTime> remainingTimeList = new List<RemainingTime>();
@@ -65,11 +70,13 @@ public class ScrollController : MonoBehaviour {
 	{
 		// csvファイルの読み込み
 		csvMgr.ReadCsv();
+
 		// 一時間後までのタイムテーブルを取得
-		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0));
+		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0), nowTime);
 		// 表示する分のオブジェクトを作成
 		foreach (TimeSpan displayTime in displayTimes)
 		{
+			Debug.Log(displayTime);
 			CreateNode(displayTime);
 		}
 	}
@@ -91,12 +98,12 @@ public class ScrollController : MonoBehaviour {
 				Text text = reTime.GetText();
 
 				// 分表示
-				text.text = reTime.GetDiffTime().Minutes + "分";
+				text.text = (reTime.GetTime() - nowTime).Minutes + "分";
 
 				// 1分未満の表示
-				if (reTime.GetDiffTime().TotalSeconds <= 60)
+				if ((reTime.GetTime() - nowTime).TotalSeconds <= 60)
 				{
-					text.text = reTime.GetDiffTime().Seconds + "秒";
+					text.text = (reTime.GetTime() - nowTime).Seconds + "秒";
 				}
 
 			}
@@ -104,19 +111,21 @@ public class ScrollController : MonoBehaviour {
 			/// オブジェクトが存在しているときの処理
 			if (remainingTimeList.Count > 0)
 			{
+				
 				/// 作成
-				//Debug.Log(remainingTimeList.Count);
-				//Debug.Log(remainingTimeList[remainingTimeList.Count - 1].GetTime());
 				// 現在の最後尾の時刻(差分ではない)
 				TimeSpan lastDisplayTime = remainingTimeList[remainingTimeList.Count - 1].GetTime();
 				// 次に表示されるやつが60分以下になっているかどうか
-				if ((csvMgr.GetNextTime(lastDisplayTime) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60)
+
+				if ((csvMgr.GetNextTime(lastDisplayTime) - nowTime).TotalMinutes <= 60 &&
+				    csvMgr.GetNextTime(lastDisplayTime) != new TimeSpan(-1, 0, 0, 0))
 				{
+					Debug.Log(csvMgr.GetNextTime(lastDisplayTime));
 					CreateNode(csvMgr.GetNextTime(lastDisplayTime));
 				}
 
 				/// 破棄
-				if (remainingTimeList[0].GetDiffTime().TotalSeconds <= 0)
+				if ((remainingTimeList[0].GetTime() - nowTime).TotalSeconds <= 0)
 				{
 					Destroy(remainingTimeList[0].GetGameObj());
 					remainingTimeList.RemoveAt(0);
@@ -136,10 +145,10 @@ public class ScrollController : MonoBehaviour {
 				waitingImage.SetActive(true);
 
 				/// 作成
-				if ((csvMgr.GetNextTime(DateTime.Now - DateTime.Today) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60 &&
-				     csvMgr.GetNextTime(DateTime.Now - DateTime.Today) != new TimeSpan(-1, 0, 0, 0))
+				if ((csvMgr.GetNextTime(nowTime) - nowTime).TotalMinutes <= 60 &&
+				     csvMgr.GetNextTime(nowTime) != new TimeSpan(-1, 0, 0, 0))
 				{
-					CreateNode(csvMgr.GetNextTime(DateTime.Now - DateTime.Today));
+					CreateNode(csvMgr.GetNextTime(nowTime));
 					waitingImage.SetActive(false);
 				}
 			}
@@ -162,5 +171,4 @@ public class ScrollController : MonoBehaviour {
 		item.SetParent(transform, false);
 		nextNodeNumber++;
 	}
-
 }
