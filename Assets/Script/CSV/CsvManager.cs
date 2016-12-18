@@ -33,7 +33,7 @@ public class CsvManager : MonoBehaviour {
 		timeTableWeekday = GetCsvValues("dummy"); // 平日用
 		timeTableHoliday = GetCsvValues("dummy"); // 休日用
 
-		setTodayTimeTable();
+		SetTodayTimeTable();
 	}
 
 	/// <summary>
