@@ -46,10 +46,8 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Script\CSV\CsvManager.cs" />
-     <Compile Include="Assets\Script\Camera_Aspect.cs" />
      <Compile Include="Assets\Script\ScrollTrain\RemainingTime.cs" />
      <Compile Include="Assets\Script\ScrollTrain\ScrollController.cs" />
-     <Compile Include="Assets\Script\SetWidth.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
