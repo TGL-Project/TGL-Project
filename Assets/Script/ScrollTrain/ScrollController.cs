@@ -29,6 +29,7 @@ public class ScrollController : MonoBehaviour {
 
 	/// <summary>
 	/// 更新頻度
+	/// 146行目で調整
 	/// </summary>
 	private float timeOut = 0.0f;
 
@@ -53,7 +54,6 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	void Start ()
 	{
-		csvMgr.ReadCsv();
 		Initialize(); //初期化用
 	}
 
@@ -63,9 +63,10 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	private void Initialize()
 	{
+		// csvファイルの読み込み
+		csvMgr.ReadCsv();
 		// 一時間後までのタイムテーブルを取得
 		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0));
-
 		// 表示する分のオブジェクトを作成
 		foreach (TimeSpan displayTime in displayTimes) 
 		{
@@ -104,8 +105,8 @@ public class ScrollController : MonoBehaviour {
 			if (remainingTimeList.Count > 0)
 			{
 				/// 作成
-				Debug.Log(remainingTimeList.Count);
-				Debug.Log(remainingTimeList[remainingTimeList.Count - 1].GetTime());
+				//Debug.Log(remainingTimeList.Count);
+				//Debug.Log(remainingTimeList[remainingTimeList.Count - 1].GetTime());
 				// 現在の最後尾の時刻(差分ではない)
 				TimeSpan lastDisplayTime = remainingTimeList[remainingTimeList.Count - 1].GetTime();
 				// 次に表示されるやつが60分以下になっているかどうか
@@ -135,7 +136,8 @@ public class ScrollController : MonoBehaviour {
 				waitingImage.SetActive(true);
 
 				/// 作成
-				if ((csvMgr.GetNextTime(DateTime.Now - DateTime.Today) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60)
+				if ((csvMgr.GetNextTime(DateTime.Now - DateTime.Today) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60 &&
+				     csvMgr.GetNextTime(DateTime.Now - DateTime.Today) != new TimeSpan(-1, 0, 0, 0))
 				{
 					CreateNode(csvMgr.GetNextTime(DateTime.Now - DateTime.Today));
 					waitingImage.SetActive(false);

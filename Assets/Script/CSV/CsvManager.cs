@@ -28,8 +28,11 @@ public class CsvManager : MonoBehaviour {
 	/// </summary>
 	public void ReadCsv ()
 	{
-		timeTableWeekday = GetCsvValues("uehonmachiWeekday"); // 平日用
-		timeTableHoliday = GetCsvValues("uehonmachiHoliday"); // 休日用
+		//timeTableWeekday = GetCsvValues("uehonmachiWeekday"); // 平日用
+		//timeTableHoliday = GetCsvValues("uehonmachiHoliday"); // 休日用
+		timeTableWeekday = GetCsvValues("dummy"); // 平日用
+		timeTableHoliday = GetCsvValues("dummy"); // 休日用
+
 		SetTodayTimeTable();
 	}
 
@@ -143,12 +146,12 @@ public class CsvManager : MonoBehaviour {
 	/// 引数より一つ先の電車到着予定時刻を取ってくる．
 	/// 次の次の時刻を呼び出したい場合，現在の時刻を引数に渡して帰ってきた値をまた引数に入れる．
 	/// </summary>
-	/// <returns>タイムテーブルにあるtimeより１つ後の時刻</returns>
+	/// <returns>タイムテーブルにあるtimeより１つ後の時刻|なかった場合は-24h</returns>
 	/// <param name="time">取りたい時刻より一つ前の時刻</param>
 	public TimeSpan GetNextTime(TimeSpan time)
 	{
 		// timeは仮置き
-		TimeSpan nextTimeData = time;
+		TimeSpan nextTimeData = new TimeSpan(-1, 0, 0, 0);
 
 		for (int i = 0; i < timeTable.Count; i++)
 		{
