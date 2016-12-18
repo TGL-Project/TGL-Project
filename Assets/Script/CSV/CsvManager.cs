@@ -23,15 +23,16 @@ public class CsvManager : MonoBehaviour {
 	/// <summary>
 	/// CSV読み取り用
 	/// ↓時刻表↓
-	/// /(uehonmachi|kawachikokubu)(Weekday|Holiday)/
+	/// /(uehonmachi|kawachikokubu)(Weekday|Holiday)/ : 各時刻表
 	/// dummy : 5分毎の時刻が記述されている
+	/// empty : 空ファイル
 	/// </summary>
 	public void ReadCsv ()
 	{
-		//timeTableWeekday = GetCsvValues("uehonmachiWeekday"); // 平日用
-		//timeTableHoliday = GetCsvValues("uehonmachiHoliday"); // 休日用
-		timeTableWeekday = GetCsvValues("dummy"); // 平日用
-		timeTableHoliday = GetCsvValues("dummy"); // 休日用
+		timeTableWeekday = GetCsvValues("uehonmachiWeekday"); // 平日用
+		timeTableHoliday = GetCsvValues("uehonmachiHoliday"); // 休日用
+		//timeTableWeekday = GetCsvValues("dummy"); // 平日用
+		//timeTableHoliday = GetCsvValues("dummy"); // 休日用
 
 		SetTodayTimeTable();
 	}
@@ -40,13 +41,10 @@ public class CsvManager : MonoBehaviour {
 	/// Gets the time spans.
 	/// 現在~x時間後のタイムテーブルを取得する
 	/// </summary>
-	public List<TimeSpan> GetTimeSpans(TimeSpan time)
+	public List<TimeSpan> GetTimeSpans(TimeSpan time, TimeSpan tsNow)
 	{
 		// 返却するデータ
 		List<TimeSpan> tsWant = new List<TimeSpan>();
-
-		// 現在の時刻
-		TimeSpan tsNow = DateTime.Now - DateTime.Today;
 
 		// 締切の時刻
 		TimeSpan tsLimit = tsNow + time;
@@ -61,7 +59,6 @@ public class CsvManager : MonoBehaviour {
 				tsWant.Add(td_ts);
 			}
 		}
-
 		return tsWant;
 	}
 
@@ -156,43 +153,15 @@ public class CsvManager : MonoBehaviour {
 
 		for (int i = 0; i < timeTable.Count; i++)
 		{
-			nextTimeData = TimeSpan.Parse(timeTable[i]);
+			TimeSpan tmp = TimeSpan.Parse(timeTable[i]);
 
 			// timeよりも後の時刻かどうかを判定
-			if (TimeSpan.Compare(nextTimeData, time) > 0)
+			if (TimeSpan.Compare(tmp, time) > 0)
 			{
+				nextTimeData = TimeSpan.Parse(timeTable[i]);
 				break;
 			}
 		}
 		return nextTimeData;
 	}
-
-	///// <summary>
-	///// 現時刻の次の電車到着予定時刻の配列番号を取ってくる．
-	///// </summary>
-	///// <returns>The time number.</returns>
-	//public int NextTimeNumber()
-	//{
-	//	int n = 0;
-	//	for (int i = 0; i < timeTable.Count; i++)
-	//	{
-	//		DateTime nextTimeTable = DateTime.Parse(timeTable[i]);
-	//		if (DateTime.Compare(nextTimeTable, DateTime.Now) > 0)
-	//		{
-	//			n = i;
-	//			break;
-	//		}
-	//	}
-	//	return n;
-	//}
-
-	///// <summary>
-	///// 電車の本数を返す
-	///// </summary>
-	///// <returns>The time table length.</returns>
-	//public int GetTimeTableLength()
-	//{
-	//	return timeTable.Count;
-
-	//}
 }
