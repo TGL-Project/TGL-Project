@@ -22,13 +22,14 @@ public class CsvManager : MonoBehaviour {
 
 	/// <summary>
 	/// CSV読み取り用
-	/// dummy→5分ごと
-	/// timeTable→平日用
+	/// ↓時刻表↓
+	/// /(uehonmachi|kawachikokubu)(Weekday|Holiday)/
+	/// dummy : 5分毎の時刻が記述されている
 	/// </summary>
 	public void ReadCsv ()
 	{
-		timeTableWeekday = GetCsvValues("dummy"); // 平日用
-		timeTableHoliday = GetCsvValues("dummy"); // 休日用
+		timeTableWeekday = GetCsvValues("uehonmachiWeekday"); // 平日用
+		timeTableHoliday = GetCsvValues("uehonmachiHoliday"); // 休日用
 		SetTodayTimeTable();
 	}
 
