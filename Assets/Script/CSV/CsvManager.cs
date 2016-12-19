@@ -3,7 +3,7 @@ using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
 
-public class CsvManager : MonoBehaviour {
+public class CsvManager {
 
 	/// <summary>
 	/// 使用中のタイムテーブル
@@ -37,13 +37,13 @@ public class CsvManager : MonoBehaviour {
 	/// 2番目 : JR長瀬
 	/// 3番目 : ダミー
 	/// </summary>
-	private int stationNumber = 3;
+	private int stationNumber = 0;
 
 	/// <summary>
 	/// 電車の向き
 	/// 0 or 1 で判定
 	/// </summary>
-	private int trainDirection = 1;
+	private int trainDirection = 0;
 
 	/// <summary>
 	/// CSV読み取り用

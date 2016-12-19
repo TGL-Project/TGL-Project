@@ -16,12 +16,6 @@ public class ScrollController : MonoBehaviour {
 	private RectTransform prefab = null;
 
 	/// <summary>
-	/// The csv mgr.
-	/// </summary>
-	[SerializeField]
-	private CsvManager csvMgr = null;
-
-	/// <summary>
 	/// オブジェクトがないときの待機用画像
 	/// </summary>
 	[SerializeField]
@@ -38,6 +32,11 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	[SerializeField]
 	private Text directionText = null;
+
+	/// <summary>
+	/// The csv mgr.
+	/// </summary>
+	private CsvManager csvMgr = new CsvManager();
 
 	/// <summary>
 	/// 更新頻度
