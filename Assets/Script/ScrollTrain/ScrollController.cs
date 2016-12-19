@@ -31,7 +31,13 @@ public class ScrollController : MonoBehaviour {
 	/// 右上の表示用テキスト
 	/// </summary>
 	[SerializeField]
-	private Text holidayOrWeekday = null;
+	private Text holidayOrWeekdayText = null;
+
+	/// <summary>
+	/// 左下の表示用テキスト
+	/// </summary>
+	[SerializeField]
+	private Text directionText = null;
 
 	/// <summary>
 	/// 更新頻度
@@ -62,7 +68,7 @@ public class ScrollController : MonoBehaviour {
 	{
 		
 		csvMgr.ReadCsv(); // csvファイルの読み込み
-		HoridayOrWeekDay(); //どっちを読み込んでいるかの判別
+		DisplayHoridayOrWeekDay(); //どっちを読み込んでいるかを表示
 		Initialize(); //初期化用
 	}
 
@@ -171,7 +177,22 @@ public class ScrollController : MonoBehaviour {
 		nextNodeNumber++;
 	}
 
-	public void LeftButton()
+	public void BottomLeftButton()
+	{
+
+		csvMgr.SwapStationDirection();
+		foreach (RemainingTime reTime in remainingTimeList)
+		{
+			Destroy(reTime.GetGameObj());
+		}
+		remainingTimeList.Clear();
+		csvMgr.ReadCsv(); // 反対方向のcsvファイルの読み込み
+		directionText.text = csvMgr.GetStationDirectionName() + "行き\nを表示中";
+		Initialize();
+	}
+
+
+	public void TopRightButton()
 	{
 		csvMgr.SwapOfHolidayAndWeekday();
 
@@ -181,21 +202,21 @@ public class ScrollController : MonoBehaviour {
 		}
 
 		remainingTimeList.Clear();
-		HoridayOrWeekDay();
+		DisplayHoridayOrWeekDay();
 		Initialize();
 	}
 
-	public void HoridayOrWeekDay()
+	public void DisplayHoridayOrWeekDay()
 	{
 		if (csvMgr.IsHolidayOrWeekDay())
 		{
 			//平日の処理
-			holidayOrWeekday.text = "平日を表示中";
+			holidayOrWeekdayText.text = "平日を表示中";
 		}
 		else
 		{
 			//休日の処理
-			holidayOrWeekday.text = "休日を表示中";
+			holidayOrWeekdayText.text = "休日を表示中";
 		}
 	}
 }

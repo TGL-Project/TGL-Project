@@ -21,6 +21,26 @@ public class CsvManager : MonoBehaviour {
 	private List<string> timeTableHoliday = new List<string>();
 
 	/// <summary>
+	/// 0番目 : 長瀬
+	/// 1番目 : JR長瀬
+	/// </summary>
+	private string[][] STATIONDATA = 
+		{
+			new string[] { "nagase_uehonmachi", "nagase_kawachikokubu" },
+			new string[] { "jrnagase_kyuhoji"  , "jrnagase_hanaten" }
+		};
+
+	/// <summary>
+	/// 駅番号
+	/// </summary>
+	private int stationNumber = 0;
+
+	/// <summary>
+	/// 電車の向き
+	/// </summary>
+	private int trainDirection = 0;
+
+	/// <summary>
 	/// CSV読み取り用
 	/// ↓時刻表↓
 	/// /(uehonmachi|kawachikokubu)(Weekday|Holiday)/ : 各時刻表
@@ -29,8 +49,8 @@ public class CsvManager : MonoBehaviour {
 	/// </summary>
 	public void ReadCsv ()
 	{
-		timeTableWeekday = GetCsvValues("uehonmachiWeekday"); // 平日用
-		timeTableHoliday = GetCsvValues("uehonmachiHoliday"); // 休日用
+		timeTableWeekday = GetCsvValues(STATIONDATA[stationNumber][trainDirection]+"Weekday"); // 平日用
+		timeTableHoliday = GetCsvValues(STATIONDATA[stationNumber][trainDirection]+"Holiday"); // 休日用
 		//timeTableWeekday = GetCsvValues("dummy"); // 平日用
 		//timeTableHoliday = GetCsvValues("dummy"); // 休日用
 
@@ -132,14 +152,7 @@ public class CsvManager : MonoBehaviour {
 	/// </summary>
 	public void SwapOfHolidayAndWeekday()
 	{
-		if (timeTable == timeTableWeekday)
-		{
-			timeTable = timeTableHoliday;
-		}
-		else
-		{
-			timeTable = timeTableWeekday;
-		}
+		timeTable = (timeTable == timeTableWeekday) ? timeTableHoliday : timeTableWeekday;
 	}
 
 
@@ -170,13 +183,26 @@ public class CsvManager : MonoBehaviour {
 
 	public bool IsHolidayOrWeekDay()
 	{
-		if (timeTable == timeTableWeekday)
+		return (timeTable == timeTableWeekday) ? true : false;
+	}
+
+	public void SwapStationDirection()
+	{
+		Debug.Log(trainDirection);
+		trainDirection = (trainDirection == 0) ? 1 : 0;
+		Debug.Log(trainDirection);
+	}
+
+	public string GetStationDirectionName()
+	{
+		switch (STATIONDATA[stationNumber][trainDirection])
 		{
-			return true;
-		}
-		else
-		{
-			return false;
+			case "nagase_uehonmachi":
+				return "上本町";
+			case "nagase_kawachikokubu":
+				return "河内国分";
+		    default:
+				return "リストにありません";
 		}
 	}
 }
