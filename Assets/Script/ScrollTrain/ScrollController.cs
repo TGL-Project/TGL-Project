@@ -139,7 +139,8 @@ public class ScrollController : MonoBehaviour {
 				}
 
 				/// 色変更
-				if (remainingTimeList.Count == 1)
+				//if (remainingTimeList.Count == 1)
+				if (csvMgr.GetNextTime(lastDisplayTime) == new TimeSpan(-1, 0, 0, 0))
 				{
 					//本数残り1で文字赤
 					remainingTimeList[remainingTimeList.Count - 1].GetText().color = new Color(255f, 0, 0);

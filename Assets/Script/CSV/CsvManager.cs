@@ -24,10 +24,11 @@ public class CsvManager : MonoBehaviour {
 	/// 0番目 : 長瀬
 	/// 1番目 : JR長瀬
 	/// </summary>
-	private string[][] STATIONDATA = 
+	private static readonly string[][] STATIONDATA = 
 		{
-			new string[] { "nagase_uehonmachi", "nagase_kawachikokubu" },
-			new string[] { "jrnagase_kyuhoji"  , "jrnagase_hanaten" }
+			new string[] { "nagase_uehonmachi"	, "nagase_kawachikokubu"},
+			new string[] { "jrnagase_kyuhoji"	, "jrnagase_hanaten" 	},
+			new string[] { "dummy"				, "empty"				}
 		};
 
 	/// <summary>
