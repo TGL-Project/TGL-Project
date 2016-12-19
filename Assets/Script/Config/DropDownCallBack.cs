@@ -2,26 +2,17 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class DropDownCallBack : MonoBehaviour {
-    //public int currentWalkTime=new int();
-    public int nextWalkTime = new int();
+public class DropdownCallBack : MonoBehaviour {
     
-        
-    /// <summary>
-    /// ドロップダウンの選択結果を受け取るメソッド
-    /// </summary>
-    /// <param name="result"></param>
-    public void OnValueChanged(Dropdown dropDown)
-    {
-        Debug.Log(dropDown);
-        nextWalkTime = dropDown.value;
-        //Debug.Log(currentWalkTime);
-        Debug.Log(nextWalkTime);
-    }
+	/// <summary>
+	/// ドロップダウンリスト
+	/// </summary>
+	[SerializeField]
+	private Dropdown dropdown = null;
 
     public int GetCurrentValue()
     {
-        return nextWalkTime;
+        return dropdown.value;
     }
 
 
