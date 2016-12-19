@@ -20,7 +20,7 @@ public class IOSettingFile {
 		TextAsset txt = Resources.Load("TXT/" + SETTINGFILENAME) as TextAsset;
 		StringReader reader = new StringReader(txt.text);
 		string sentence = reader.ReadToEnd();
-		reader.close();
+		reader.Close();
 		Debug.Log(sentence);
 		return (sentence == "") ? "0" : sentence;
 	}
