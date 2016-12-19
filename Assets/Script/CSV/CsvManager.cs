@@ -188,9 +188,7 @@ public class CsvManager : MonoBehaviour {
 
 	public void SwapStationDirection()
 	{
-		Debug.Log(trainDirection);
 		trainDirection = (trainDirection == 0) ? 1 : 0;
-		Debug.Log(trainDirection);
 	}
 
 	public string GetStationDirectionName()
