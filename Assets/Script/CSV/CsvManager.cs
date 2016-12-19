@@ -21,25 +21,29 @@ public class CsvManager : MonoBehaviour {
 	private List<string> timeTableHoliday = new List<string>();
 
 	/// <summary>
-	/// 0番目 : 長瀬
-	/// 1番目 : JR長瀬
+	/// 駅データ
 	/// </summary>
 	private static readonly string[][] STATIONDATA = 
 		{
-			new string[] { "nagase_uehonmachi"	, "nagase_kawachikokubu"},
-			new string[] { "jrnagase_kyuhoji"	, "jrnagase_hanaten" 	},
-			new string[] { "dummy"				, "empty"				}
+			new string[] { "nagase_uehonmachi"	, "nagase_kawachikokubu"}, // 実装済み
+			new string[] { "yaenosato_nanba"    , "yaenosato_nara"      }, // 未実装
+			new string[] { "jrnagase_kyuhoji"	, "jrnagase_hanaten" 	}, // 未実装
+			new string[] { "dummy"				, "empty"				}  // 実装済み
 		};
 
 	/// <summary>
-	/// 駅番号
+	/// 0番目 : 長瀬
+	/// 1番目 : 八戸ノ里
+	/// 2番目 : JR長瀬
+	/// 3番目 : ダミー
 	/// </summary>
-	private int stationNumber = 0;
+	private int stationNumber = 3;
 
 	/// <summary>
 	/// 電車の向き
+	/// 0 or 1 で判定
 	/// </summary>
-	private int trainDirection = 0;
+	private int trainDirection = 1;
 
 	/// <summary>
 	/// CSV読み取り用
@@ -196,11 +200,25 @@ public class CsvManager : MonoBehaviour {
 	{
 		switch (STATIONDATA[stationNumber][trainDirection])
 		{
+			
 			case "nagase_uehonmachi":
 				return "上本町";
 			case "nagase_kawachikokubu":
 				return "河内国分";
-		    default:
+			case "yaenosato_nanba":
+				return "難波";
+			case "yaenosato_nara":
+				return "奈良";
+			case "jrnagase_kyuhoji":
+				return "久宝寺";
+			case "jrnagase_hanaten":
+				return "放出";
+			case "dummy":
+				return "ダミー";
+			case "empty":
+				return "ダミー";
+
+			default:
 				return "リストにありません";
 		}
 	}

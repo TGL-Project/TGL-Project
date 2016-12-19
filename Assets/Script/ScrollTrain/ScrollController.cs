@@ -190,6 +190,7 @@ public class ScrollController : MonoBehaviour {
 		}
 		remainingTimeList.Clear();
 		csvMgr.ReadCsv(); // 反対方向のcsvファイルの読み込み
+		waitingImage.SetActive(false);
 		Initialize();
 	}
 
