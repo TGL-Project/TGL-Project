@@ -37,7 +37,7 @@ public class CsvManager {
 	/// 2番目 : JR長瀬
 	/// 3番目 : ダミー
 	/// </summary>
-	private int stationNumber = 0;
+	private int stationNumber = 3;
 
 	/// <summary>
 	/// 電車の向き
@@ -56,8 +56,6 @@ public class CsvManager {
 	{
 		timeTableWeekday = GetCsvValues(STATIONDATA[stationNumber][trainDirection]+"Weekday"); // 平日用
 		timeTableHoliday = GetCsvValues(STATIONDATA[stationNumber][trainDirection]+"Holiday"); // 休日用
-		//timeTableWeekday = GetCsvValues("dummy"); // 平日用
-		//timeTableHoliday = GetCsvValues("dummy"); // 休日用
 
 		SetTodayTimeTable();
 	}

@@ -46,6 +46,9 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Script\CSV\CsvManager.cs" />
+     <Compile Include="Assets\Script\Config\ChangeScene.cs" />
+     <Compile Include="Assets\Script\Config\ChangeTime.cs" />
+     <Compile Include="Assets\Script\Config\DropDownCallBack.cs" />
      <Compile Include="Assets\Script\ScrollTrain\RemainingTime.cs" />
      <Compile Include="Assets\Script\ScrollTrain\ScrollController.cs" />
  <Reference Include="UnityEngine.UI">
