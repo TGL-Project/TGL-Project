@@ -84,6 +84,8 @@ public class ScrollController : MonoBehaviour {
 	{
 		// 現在の歩行データを取得する
 		walkTime = Int32.Parse(PlayerPrefs.GetString("walkTime", "0"));
+		// 歩行時間分の調整を行う
+		csvMgr.SetWalkTime(walkTime);
 		// 左下のボタン表示を行う
 		directionText.text = csvMgr.GetStationDirectionName() + "行き\nを表示中";
 		// 一時間後までのタイムテーブルを取得
