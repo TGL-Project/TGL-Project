@@ -4,11 +4,6 @@ using UnityEngine;
 using System.Collections;
 
 public class IOSettingFile {
-
-	/// <summary>
-	/// 設定ファイル名
-	/// </summary>
-	private static readonly string SETTINGFILENAME = "configWalkTime";
 		
 	/// <summary>
 	/// 歩行時間の取得メソッド
@@ -28,6 +23,5 @@ public class IOSettingFile {
 	public void ChangeWalkingTime(int value)
 	{
 		PlayerPrefs.SetString("walkTime", value + "");
-		Debug.Log(PlayerPrefs.GetString("walkTime"));
 	}
 }

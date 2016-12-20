@@ -37,7 +37,7 @@ public class CsvManager {
 	/// 2番目 : JR長瀬
 	/// 3番目 : ダミー
 	/// </summary>
-	private int stationNumber = 0;
+	private int stationNumber = 3;
 
 	/// <summary>
 	/// 電車の向き
@@ -64,16 +64,16 @@ public class CsvManager {
 	/// Gets the time spans.
 	/// 現在~x時間後のタイムテーブルを取得する
 	/// </summary>
-	public List<TimeSpan> GetTimeSpans(TimeSpan time)
+	public List<TimeSpan> GetTimeSpans(TimeSpan time, int walkTime)
 	{
 		// 返却するデータ
 		List<TimeSpan> tsWant = new List<TimeSpan>();
 
-		// 現在の時刻
+		// 現在の時刻 + 歩行時間
 		TimeSpan tsNow = (DateTime.Now - DateTime.Today);
 
-		// 締切の時刻
-		TimeSpan tsLimit = tsNow + time;
+		// 締切の時刻 + 歩行時間
+		TimeSpan tsLimit = tsNow + time + TimeSpan.FromMinutes(walkTime);
 
 		// タイムテーブルを確認
 		foreach (String td_s in timeTable)

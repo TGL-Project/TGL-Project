@@ -55,6 +55,11 @@ public class ScrollController : MonoBehaviour {
 	private int nextNodeNumber = 0;
 
 	/// <summary>
+	/// 歩行時間
+	/// </summary>
+	private int walkTime = 0;
+
+	/// <summary>
 	/// 各RemainingTimeNodeの情報を入れる
 	/// </summary>
 	private List<RemainingTime> remainingTimeList = new List<RemainingTime>();
@@ -65,7 +70,7 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	void Start ()
 	{
-		//WalkTimeData.GetWalkTime(); //歩行時間を取得
+		Screen.fullScreen = false; //フルスクリーンの無効化
 		csvMgr.ReadCsv(); // csvファイルの読み込み
 		DisplayHoridayOrWeekDay(); //どっちを読み込んでいるかを表示
 		Initialize(); //初期化用
@@ -77,10 +82,12 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	private void Initialize()
 	{
+		// 現在の歩行データを取得する
+		walkTime = Int32.Parse(PlayerPrefs.GetString("walkTime", "0"));
 		// 左下のボタン表示を行う
 		directionText.text = csvMgr.GetStationDirectionName() + "行き\nを表示中";
 		// 一時間後までのタイムテーブルを取得
-		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0));
+		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans( new TimeSpan(1, 0, 0), walkTime);
 		// 表示する分のオブジェクトを作成
 		foreach (TimeSpan displayTime in displayTimes)
 		{
@@ -92,7 +99,6 @@ public class ScrollController : MonoBehaviour {
 	/// Unityのアップデート関数
 	/// </summary>
 	void Update () {
-		Debug.Log(WalkTimeData.walkTime);
 		// 経過時刻の測定
 		timeElapsed += Time.deltaTime;
 
@@ -175,7 +181,7 @@ public class ScrollController : MonoBehaviour {
 		// プレハブのコピー
 		RectTransform item = GameObject.Instantiate(prefab) as RectTransform;
 		item.name = "RemainingTimeNode" + nextNodeNumber;
-		remainingTimeList.Add(new RemainingTime(item.gameObject, displayTime));
+		remainingTimeList.Add(new RemainingTime(item.gameObject, displayTime - TimeSpan.FromMinutes(walkTime) ));
 		item.SetParent(transform, false);
 		nextNodeNumber++;
 	}
