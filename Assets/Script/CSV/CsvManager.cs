@@ -3,7 +3,7 @@ using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
 
-public class CsvManager : MonoBehaviour {
+public class CsvManager {
 
 	/// <summary>
 	/// 使用中のタイムテーブル
@@ -21,6 +21,31 @@ public class CsvManager : MonoBehaviour {
 	private List<string> timeTableHoliday = new List<string>();
 
 	/// <summary>
+	/// 駅データ
+	/// </summary>
+	private static readonly string[][] STATIONDATA = 
+		{
+			new string[] { "nagase_uehonmachi"	, "nagase_kawachikokubu"}, // 実装済み
+			new string[] { "yaenosato_nanba"    , "yaenosato_nara"      }, // 未実装
+			new string[] { "jrnagase_kyuhoji"	, "jrnagase_hanaten" 	}, // 未実装
+			new string[] { "dummy"				, "empty"				}  // 実装済み
+		};
+
+	/// <summary>
+	/// 0番目 : 長瀬
+	/// 1番目 : 八戸ノ里
+	/// 2番目 : JR長瀬
+	/// 3番目 : ダミー
+	/// </summary>
+	private int stationNumber = 3;
+
+	/// <summary>
+	/// 電車の向き
+	/// 0 or 1 で判定
+	/// </summary>
+	private int trainDirection = 0;
+
+	/// <summary>
 	/// CSV読み取り用
 	/// ↓時刻表↓
 	/// /(uehonmachi|kawachikokubu)(Weekday|Holiday)/ : 各時刻表
@@ -29,10 +54,8 @@ public class CsvManager : MonoBehaviour {
 	/// </summary>
 	public void ReadCsv ()
 	{
-		timeTableWeekday = GetCsvValues("uehonmachiWeekday"); // 平日用
-		timeTableHoliday = GetCsvValues("uehonmachiHoliday"); // 休日用
-		//timeTableWeekday = GetCsvValues("dummy"); // 平日用
-		//timeTableHoliday = GetCsvValues("dummy"); // 休日用
+		timeTableWeekday = GetCsvValues(STATIONDATA[stationNumber][trainDirection]+"Weekday"); // 平日用
+		timeTableHoliday = GetCsvValues(STATIONDATA[stationNumber][trainDirection]+"Holiday"); // 休日用
 
 		SetTodayTimeTable();
 	}
@@ -41,12 +64,15 @@ public class CsvManager : MonoBehaviour {
 	/// Gets the time spans.
 	/// 現在~x時間後のタイムテーブルを取得する
 	/// </summary>
-	public List<TimeSpan> GetTimeSpans(TimeSpan time, TimeSpan tsNow)
+	public List<TimeSpan> GetTimeSpans(TimeSpan time)
 	{
 		// 返却するデータ
 		List<TimeSpan> tsWant = new List<TimeSpan>();
 
-		// 締切の時刻
+		// 現在の時刻 + 歩行時間
+		TimeSpan tsNow = (DateTime.Now - DateTime.Today);
+
+		// 締切の時刻 + 歩行時間
 		TimeSpan tsLimit = tsNow + time;
 
 		// タイムテーブルを確認
@@ -127,17 +153,10 @@ public class CsvManager : MonoBehaviour {
 	/// <summary>
 	/// 休日用と平日用の入れ替えメソッド
 	/// </summary>
-	//private void ChangeCsv()
-	//{
-	//	if (timeTable == timeTableWeekday)
-	//	{
-	//		timeTable = timeTableHoliday;
-	//	}
-	//	else
-	//	{
-	//		timeTable = timeTableWeekday;
-	//	}
-	//}
+	public void SwapOfHolidayAndWeekday()
+	{
+		timeTable = (timeTable == timeTableWeekday) ? timeTableHoliday : timeTableWeekday;
+	}
 
 
 	/// <summary>
@@ -163,5 +182,42 @@ public class CsvManager : MonoBehaviour {
 			}
 		}
 		return nextTimeData;
+	}
+
+	public bool IsHolidayOrWeekDay()
+	{
+		return (timeTable == timeTableWeekday) ? true : false;
+	}
+
+	public void SwapStationDirection()
+	{
+		trainDirection = (trainDirection == 0) ? 1 : 0;
+	}
+
+	public string GetStationDirectionName()
+	{
+		switch (STATIONDATA[stationNumber][trainDirection])
+		{
+			
+			case "nagase_uehonmachi":
+				return "上本町";
+			case "nagase_kawachikokubu":
+				return "河内国分";
+			case "yaenosato_nanba":
+				return "難波";
+			case "yaenosato_nara":
+				return "奈良";
+			case "jrnagase_kyuhoji":
+				return "久宝寺";
+			case "jrnagase_hanaten":
+				return "放出";
+			case "dummy":
+				return "ダミー";
+			case "empty":
+				return "ダミー";
+
+			default:
+				return "リストにありません";
+		}
 	}
 }

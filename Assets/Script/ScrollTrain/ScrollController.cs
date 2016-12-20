@@ -16,16 +16,27 @@ public class ScrollController : MonoBehaviour {
 	private RectTransform prefab = null;
 
 	/// <summary>
-	/// The csv mgr.
-	/// </summary>
-	[SerializeField]
-	private CsvManager csvMgr = null;
-
-	/// <summary>
 	/// オブジェクトがないときの待機用画像
 	/// </summary>
 	[SerializeField]
 	private GameObject waitingImage = null;
+
+	/// <summary>
+	/// 右上の表示用テキスト
+	/// </summary>
+	[SerializeField]
+	private Text holidayOrWeekdayText = null;
+
+	/// <summary>
+	/// 左下の表示用テキスト
+	/// </summary>
+	[SerializeField]
+	private Text directionText = null;
+
+	/// <summary>
+	/// The csv mgr.
+	/// </summary>
+	private CsvManager csvMgr = new CsvManager();
 
 	/// <summary>
 	/// 更新頻度
@@ -44,9 +55,9 @@ public class ScrollController : MonoBehaviour {
 	private int nextNodeNumber = 0;
 
 	/// <summary>
-	/// 現在の時刻
+	/// 歩行時間
 	/// </summary>
-	private TimeSpan nowTime = (DateTime.Now - DateTime.Today);
+	private int walkTime = 0;
 
 	/// <summary>
 	/// 各RemainingTimeNodeの情報を入れる
@@ -59,6 +70,9 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	void Start ()
 	{
+		Screen.fullScreen = false; //フルスクリーンの無効化
+		csvMgr.ReadCsv(); // csvファイルの読み込み
+		DisplayHoridayOrWeekDay(); //どっちを読み込んでいるかを表示
 		Initialize(); //初期化用
 	}
 
@@ -68,15 +82,15 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	private void Initialize()
 	{
-		// csvファイルの読み込み
-		csvMgr.ReadCsv();
-
+		// 現在の歩行データを取得する
+		walkTime = Int32.Parse(PlayerPrefs.GetString("walkTime", "0"));
+		// 左下のボタン表示を行う
+		directionText.text = csvMgr.GetStationDirectionName() + "行き\nを表示中";
 		// 一時間後までのタイムテーブルを取得
-		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0), nowTime);
+		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0));
 		// 表示する分のオブジェクトを作成
 		foreach (TimeSpan displayTime in displayTimes)
 		{
-			Debug.Log(displayTime);
 			CreateNode(displayTime);
 		}
 	}
@@ -98,12 +112,12 @@ public class ScrollController : MonoBehaviour {
 				Text text = reTime.GetText();
 
 				// 分表示
-				text.text = (reTime.GetTime() - nowTime).Minutes + "分";
+				text.text = (reTime.GetDiffTime()).Minutes + "分";
 
 				// 1分未満の表示
-				if ((reTime.GetTime() - nowTime).TotalSeconds <= 60)
+				if ((reTime.GetDiffTime()).TotalSeconds <= 60)
 				{
-					text.text = (reTime.GetTime() - nowTime).Seconds + "秒";
+					text.text = (reTime.GetDiffTime()).Seconds + "秒";
 				}
 
 			}
@@ -117,22 +131,22 @@ public class ScrollController : MonoBehaviour {
 				TimeSpan lastDisplayTime = remainingTimeList[remainingTimeList.Count - 1].GetTime();
 				// 次に表示されるやつが60分以下になっているかどうか
 
-				if ((csvMgr.GetNextTime(lastDisplayTime) - nowTime).TotalMinutes <= 60 &&
+				if ((csvMgr.GetNextTime(lastDisplayTime) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60 &&
 				    csvMgr.GetNextTime(lastDisplayTime) != new TimeSpan(-1, 0, 0, 0))
 				{
-					Debug.Log(csvMgr.GetNextTime(lastDisplayTime));
 					CreateNode(csvMgr.GetNextTime(lastDisplayTime));
 				}
 
 				/// 破棄
-				if ((remainingTimeList[0].GetTime() - nowTime).TotalSeconds <= 0)
+				if ((remainingTimeList[0].GetDiffTime()).TotalSeconds <= 0)
 				{
 					Destroy(remainingTimeList[0].GetGameObj());
 					remainingTimeList.RemoveAt(0);
 				}
 
 				/// 色変更
-				if (remainingTimeList.Count == 1)
+				//if (remainingTimeList.Count == 1)
+				if (csvMgr.GetNextTime(lastDisplayTime) == new TimeSpan(-1, 0, 0, 0))
 				{
 					//本数残り1で文字赤
 					remainingTimeList[remainingTimeList.Count - 1].GetText().color = new Color(255f, 0, 0);
@@ -145,10 +159,10 @@ public class ScrollController : MonoBehaviour {
 				waitingImage.SetActive(true);
 
 				/// 作成
-				if ((csvMgr.GetNextTime(nowTime) - nowTime).TotalMinutes <= 60 &&
-				     csvMgr.GetNextTime(nowTime) != new TimeSpan(-1, 0, 0, 0))
+				if ((csvMgr.GetNextTime((DateTime.Now - DateTime.Today)) - (DateTime.Now - DateTime.Today)).TotalMinutes <= 60 &&
+				     csvMgr.GetNextTime((DateTime.Now - DateTime.Today)) != new TimeSpan(-1, 0, 0, 0))
 				{
-					CreateNode(csvMgr.GetNextTime(nowTime));
+					CreateNode(csvMgr.GetNextTime((DateTime.Now - DateTime.Today)));
 					waitingImage.SetActive(false);
 				}
 			}
@@ -170,5 +184,48 @@ public class ScrollController : MonoBehaviour {
 		remainingTimeList.Add(new RemainingTime(item.gameObject, displayTime));
 		item.SetParent(transform, false);
 		nextNodeNumber++;
+	}
+
+	public void BottomLeftButton()
+	{
+
+		csvMgr.SwapStationDirection();
+		foreach (RemainingTime reTime in remainingTimeList)
+		{
+			Destroy(reTime.GetGameObj());
+		}
+		remainingTimeList.Clear();
+		csvMgr.ReadCsv(); // 反対方向のcsvファイルの読み込み
+		waitingImage.SetActive(false);
+		Initialize();
+	}
+
+
+	public void TopRightButton()
+	{
+		csvMgr.SwapOfHolidayAndWeekday();
+
+		foreach (RemainingTime reTime in remainingTimeList)
+		{
+				Destroy(reTime.GetGameObj());
+		}
+
+		remainingTimeList.Clear();
+		DisplayHoridayOrWeekDay();
+		Initialize();
+	}
+
+	public void DisplayHoridayOrWeekDay()
+	{
+		if (csvMgr.IsHolidayOrWeekDay())
+		{
+			//平日の処理
+			holidayOrWeekdayText.text = "平日を表示中";
+		}
+		else
+		{
+			//休日の処理
+			holidayOrWeekdayText.text = "休日を表示中";
+		}
 	}
 }
