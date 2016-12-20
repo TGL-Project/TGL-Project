@@ -87,7 +87,7 @@ public class ScrollController : MonoBehaviour {
 		// 左下のボタン表示を行う
 		directionText.text = csvMgr.GetStationDirectionName() + "行き\nを表示中";
 		// 一時間後までのタイムテーブルを取得
-		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans( new TimeSpan(1, 0, 0), walkTime);
+		List<TimeSpan> displayTimes = csvMgr.GetTimeSpans(new TimeSpan(1, 0, 0));
 		// 表示する分のオブジェクトを作成
 		foreach (TimeSpan displayTime in displayTimes)
 		{
@@ -181,7 +181,7 @@ public class ScrollController : MonoBehaviour {
 		// プレハブのコピー
 		RectTransform item = GameObject.Instantiate(prefab) as RectTransform;
 		item.name = "RemainingTimeNode" + nextNodeNumber;
-		remainingTimeList.Add(new RemainingTime(item.gameObject, displayTime - TimeSpan.FromMinutes(walkTime) ));
+		remainingTimeList.Add(new RemainingTime(item.gameObject, displayTime));
 		item.SetParent(transform, false);
 		nextNodeNumber++;
 	}

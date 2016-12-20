@@ -64,7 +64,7 @@ public class CsvManager {
 	/// Gets the time spans.
 	/// 現在~x時間後のタイムテーブルを取得する
 	/// </summary>
-	public List<TimeSpan> GetTimeSpans(TimeSpan time, int walkTime)
+	public List<TimeSpan> GetTimeSpans(TimeSpan time)
 	{
 		// 返却するデータ
 		List<TimeSpan> tsWant = new List<TimeSpan>();
@@ -73,7 +73,7 @@ public class CsvManager {
 		TimeSpan tsNow = (DateTime.Now - DateTime.Today);
 
 		// 締切の時刻 + 歩行時間
-		TimeSpan tsLimit = tsNow + time + TimeSpan.FromMinutes(walkTime);
+		TimeSpan tsLimit = tsNow + time;
 
 		// タイムテーブルを確認
 		foreach (String td_s in timeTable)
