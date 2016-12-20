@@ -17,12 +17,7 @@ public class IOSettingFile {
 	/// <returns></returns>
 	public string GetWalkingTime()
 	{
-		TextAsset txt = Resources.Load("TXT/" + SETTINGFILENAME) as TextAsset;
-		StringReader reader = new StringReader(txt.text);
-		string sentence = reader.ReadToEnd();
-		reader.Close();
-		Debug.Log(sentence);
-		return (sentence == "") ? "0" : sentence;
+		return PlayerPrefs.GetString("walkTime", "0");
 	}
 
 
@@ -32,14 +27,7 @@ public class IOSettingFile {
 	/// <param name="textFile">書き込みを行うファイル</param>
 	public void ChangeWalkingTime(int value)
 	{
-		// パスのロード
-		StreamWriter streamWriter = new StreamWriter(Application.dataPath + "/Resources/TXT/" + SETTINGFILENAME + ".txt", false);
-
-		// 値の記述
-		streamWriter.Write(value.ToString());
-
-		streamWriter.Flush();
-		streamWriter.Close();
-
+		PlayerPrefs.SetString("walkTime", value + "");
+		Debug.Log(PlayerPrefs.GetString("walkTime"));
 	}
 }

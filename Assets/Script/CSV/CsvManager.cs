@@ -37,7 +37,7 @@ public class CsvManager {
 	/// 2番目 : JR長瀬
 	/// 3番目 : ダミー
 	/// </summary>
-	private int stationNumber = 3;
+	private int stationNumber = 0;
 
 	/// <summary>
 	/// 電車の向き

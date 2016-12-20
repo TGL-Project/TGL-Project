@@ -65,7 +65,7 @@ public class ScrollController : MonoBehaviour {
 	/// </summary>
 	void Start ()
 	{
-		
+		//WalkTimeData.GetWalkTime(); //歩行時間を取得
 		csvMgr.ReadCsv(); // csvファイルの読み込み
 		DisplayHoridayOrWeekDay(); //どっちを読み込んでいるかを表示
 		Initialize(); //初期化用
@@ -92,6 +92,7 @@ public class ScrollController : MonoBehaviour {
 	/// Unityのアップデート関数
 	/// </summary>
 	void Update () {
+		Debug.Log(WalkTimeData.walkTime);
 		// 経過時刻の測定
 		timeElapsed += Time.deltaTime;
 
