@@ -220,4 +220,14 @@ public class CsvManager {
 				return "リストにありません";
 		}
 	}
+
+	public void SetWalkTime(int walkTime)
+	{
+		for (int i = 0; i < timeTable.Count; i++)
+		{
+			double actualNumber = TimeSpan.Parse(timeTable[i]).TotalMinutes - walkTime;
+			TimeSpan ts = TimeSpan.FromMinutes(actualNumber);
+			timeTable[i] = ts.ToString();
+		}
+	}
 }
