@@ -60,9 +60,21 @@ public class ScrollController : MonoBehaviour {
 	private int walkTime = 0;
 
 	/// <summary>
+	/// 通知判定
+	/// </summary>
+	private bool isPushTime = false;
+
+	/// <summary>
 	/// 各RemainingTimeNodeの情報を入れる
 	/// </summary>
 	private List<RemainingTime> remainingTimeList = new List<RemainingTime>();
+
+	/// <summary>
+	/// push通知用
+	/// pushMsg.SendPush(); //これで呼び出し
+	/// レスポンスは30~50秒ぐらい
+	/// </summary>
+	private Notification pushMsg = new Notification();
 
 	/// <summary>
 	/// 初期化用
@@ -84,6 +96,9 @@ public class ScrollController : MonoBehaviour {
 	{
 		// 現在の歩行データを取得する
 		walkTime = Int32.Parse(PlayerPrefs.GetString("walkTime", "0"));
+		// 現在の歩行データを取得する
+		isPushTime = Convert.ToBoolean(PlayerPrefs.GetString("notificationBool", "false") );
+
 		// 歩行時間分の調整を行う
 		csvMgr.SetWalkTime(walkTime);
 		// 左下のボタン表示を行う
@@ -107,6 +122,7 @@ public class ScrollController : MonoBehaviour {
 		/// 1秒おきに呼び出す
 		if (timeElapsed >= timeOut)
 		{
+			
 			// 初期は 0 ~ 11
 			foreach (RemainingTime reTime in remainingTimeList)
 			{
@@ -122,6 +138,12 @@ public class ScrollController : MonoBehaviour {
 					text.text = (reTime.GetDiffTime()).Seconds + "秒";
 				}
 
+				/// 通知 5分のとき，大体5分前通知 ****要調整****
+				if (isPushTime == true && (int)( ( reTime.GetDiffTime() ).TotalSeconds) == 60 * 5.5)
+				{
+					Debug.Log("test");
+					pushMsg.SendPush();
+				}
 			}
 
 			/// オブジェクトが存在しているときの処理
@@ -153,6 +175,7 @@ public class ScrollController : MonoBehaviour {
 					//本数残り1で文字赤
 					remainingTimeList[remainingTimeList.Count - 1].GetText().color = new Color(255f, 0, 0);
 				}
+
 			}
 			/// オブジェクトが無いとき
 			else
