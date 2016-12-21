@@ -9,10 +9,12 @@ public class ChangeTime : MonoBehaviour {
 	/// </summary>
 	public void OnClickSave()
 	{
-		int dropdownValue = GetComponent<DropdownCallBack>().GetCurrentValue();
 		IOSettingFile ioSetting = new IOSettingFile();
-		ioSetting.ChangeWalkingTime(dropdownValue);
 
+		int dropdownValue = GetComponent<DropdownCallBack>().GetCurrentValue();
+		bool isToggle = GetComponent<PushActionTimeBoolCallBack>().IsGetToggle();
+
+		ioSetting.ChangeWalkingTime(dropdownValue, isToggle);
 		SceneManager.LoadScene(0);
 		//SceneManager.UnloadScene(1);
 	}

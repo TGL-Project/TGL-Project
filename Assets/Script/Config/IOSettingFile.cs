@@ -15,13 +15,13 @@ public class IOSettingFile {
 		return PlayerPrefs.GetString("walkTime", "0");
 	}
 
-
 	/// <summary>
 	/// 歩行時間の書き換えメソッド
 	/// </summary>
 	/// <param name="textFile">書き込みを行うファイル</param>
-	public void ChangeWalkingTime(int value)
+	public void ChangeWalkingTime(int value,bool toggle)
 	{
 		PlayerPrefs.SetString("walkTime", value + "");
+		PlayerPrefs.SetString("notificationBool", toggle.ToString());
 	}
 }
