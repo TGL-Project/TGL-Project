@@ -230,4 +230,9 @@ public class CsvManager {
 			timeTable[i] = ts.ToString();
 		}
 	}
+
+	public void SetStationNumber(int stationValue)
+	{
+		stationNumber = stationValue;
+	}
 }

@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scene/ScrollTrain.unity
+- path: Assets/Scene/Configuration.unity
   isLoaded: 1
   isActive: 1

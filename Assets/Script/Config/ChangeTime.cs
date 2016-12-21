@@ -13,8 +13,9 @@ public class ChangeTime : MonoBehaviour {
 
 		int dropdownValue = GetComponent<DropdownCallBack>().GetCurrentValue();
 		bool isToggle = GetComponent<PushActionTimeBoolCallBack>().IsGetToggle();
+		int stationValue = GetComponent<StationCallBack>().GetStationValue();
 
-		ioSetting.ChangeWalkingTime(dropdownValue, isToggle);
+		ioSetting.ChangeWalkingTime(dropdownValue, isToggle, stationValue);
 		SceneManager.LoadScene(0);
 		//SceneManager.UnloadScene(1);
 	}

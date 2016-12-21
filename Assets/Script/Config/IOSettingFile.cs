@@ -19,9 +19,10 @@ public class IOSettingFile {
 	/// 歩行時間の書き換えメソッド
 	/// </summary>
 	/// <param name="textFile">書き込みを行うファイル</param>
-	public void ChangeWalkingTime(int value,bool toggle)
+	public void ChangeWalkingTime(int value, bool toggle, int stationValue)
 	{
 		PlayerPrefs.SetString("walkTime", value + "");
 		PlayerPrefs.SetString("notificationBool", toggle.ToString());
+		PlayerPrefs.SetInt("stationValue", stationValue);
 	}
 }

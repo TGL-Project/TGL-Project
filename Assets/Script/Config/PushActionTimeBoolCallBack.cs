@@ -6,7 +6,7 @@ public class PushActionTimeBoolCallBack : MonoBehaviour
 {
 
 	/// <summary>
-	/// ドロップダウンリスト
+	/// トグルボタン
 	/// </summary>
 	[SerializeField]
 	private Toggle toggle = null;
