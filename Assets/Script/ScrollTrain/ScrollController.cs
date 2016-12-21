@@ -98,8 +98,6 @@ public class ScrollController : MonoBehaviour {
 		walkTime = Int32.Parse(PlayerPrefs.GetString("walkTime", "0"));
 		// 現在の歩行データを取得する
 		isPushTime = Convert.ToBoolean(PlayerPrefs.GetString("notificationBool", "false") );
-		// Csvに駅データをセット
-		csvMgr.SetStationNumber(PlayerPrefs.GetInt("stationValue", 0));
 		      
 		// 歩行時間分の調整を行う
 		csvMgr.SetWalkTime(walkTime);
